@@ -14,6 +14,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Contex;
+using Contex.Infrastructure;
 
 namespace WebApplication3
 {
@@ -31,6 +32,7 @@ namespace WebApplication3
         {
 
             services.AddControllers();
+            services.AddTransient<IUserService, UserService>();
             services.AddEntityFrameworkNpgsql()
                 .AddDbContext<ApplicationContex>(x=>
                     x.UseNpgsql(Configuration.GetConnectionString("DatabaseConnection"),

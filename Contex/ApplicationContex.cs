@@ -11,9 +11,5 @@ namespace Contex
 
         public ApplicationContex(){ }
         public ApplicationContex(DbContextOptions<ApplicationContex> options):base(options){ }
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-          //  optionsBuilder.UseNpgsql(ConfigurationManager.ConnectionStrings["DB"].ConnectionString);
-        }
     }
 }
