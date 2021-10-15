@@ -48,11 +48,12 @@ namespace RestApi.Tests
                 new () {Age = 21, CurrentTime = DateTime.Now, Id = 3, Name = "valera", Surname = "ovechkin"},
                 new () {Age = 22, CurrentTime = DateTime.Now, Id = 4, Name = "roman", Surname = "sochin"}
             };
+            var mockDbSet = new Mock<DbSet<User>>();
+            mockDbSet.Object.AddRange(users);
             var mockDbContext = new Mock<ApplicationContex>();
             mockDbContext.Setup(d => d.Users)
-                .Returns(users);
-            mockDbContext.Setup(d => d.Users)
-                .ThrowsAsync(new Exception());
+                .Returns(mockDbSet.Object);
+            mockDbContext.Setup(d => d.Users).ThrowsAsync(new Exception());
 
             var service = new UserService(mockDbContext)
 
