@@ -26,12 +26,12 @@ namespace RestApi.Tests
                     new () {Age = 22, CurrentTime = DateTime.Now, Id = 4, Name = "roman", Surname = "sochin"}
                 };
                 var DbOptions = new DbContextOptionsBuilder<ApplicationContex>().UseInMemoryDatabase("TestUserDb").Options;
-                using (var contexdb = new ApplicationContex(DbOptions))
+                using (var dbContex = new ApplicationContex(DbOptions))
                 {
-                    if (!contexdb.Users.Any())
+                    if (!dbContex.Users.Any())
                     {
-                        contexdb.AddRange(users);
-                        contexdb.SaveChanges();
+                        dbContex.AddRange(users);
+                        dbContex.SaveChanges();
                     }
                 }
 
@@ -67,6 +67,56 @@ namespace RestApi.Tests
             // Assert
 
             Assert.IsType<List<User>>(result);
+        }
+        [Fact]
+        public async void Get_user_by_Id_test()
+        {
+            // Arrange
+
+            UserService service = new UserService(contex);
+            int id = 2;
+            // Act
+
+            var result = await service.GetUserAsync(id,new CancellationToken());
+
+            // Assert
+
+            Assert.Equal(2,result.Id);
+        }
+        [Fact]
+        public async void Add_user_test()
+        {
+            // Arrange
+
+            UserService service = new UserService(contex);
+
+            // Act
+
+            var result = await service.AddUserAsync(new CancellationToken());
+
+            // Assert
+
+            Assert.Equal(true,result);
+        }
+
+        [Theory]
+        [InlineData(1)]
+        [InlineData(4)]
+        [InlineData(2)]
+        [InlineData(3)]
+        public async void Delete_user_test(int Id)
+        {
+            // Arrange
+
+            UserService service = new UserService(contex);
+
+            // Act
+
+            var result = await service.DeleteUserAsync(Id, new CancellationToken());
+
+            // Assert
+
+            Assert.Equal(true, result);
         }
     }
 }
