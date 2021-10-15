@@ -51,7 +51,7 @@ namespace WebApplication3.Controllers
             //var l = new List<User>();
             //return this.Ok(l);
             var result = await _service.GetUserAsync(id, token);
-            if (result.Id!=0)
+            if (result!=null)
             {
                 _logger.LogWarning("Success");
             }

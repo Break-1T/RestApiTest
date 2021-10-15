@@ -17,10 +17,10 @@ namespace Contex
         private readonly ApplicationContex _dbContext;
         private readonly ILogger<UserService> _logger;
 
-        public UserService(ApplicationContex dbContext)
+        public UserService(ApplicationContex dbContext, Logger<UserService> logger)
         {
-            this._dbContext = dbContext;
-            _logger = new Logger<UserService>(new LoggerFactory(new List<ILoggerProvider>()));
+            this._dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+            this._logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public async Task<IEnumerable<User>> GetUserAsync(CancellationToken cancellationToken)
@@ -33,13 +33,10 @@ namespace Contex
             }
             catch(Exception ex)
             {
-                resultMessage = $"Error in method{MethodInfo.GetCurrentMethod().Name}\n {ex.Message}";
+                _logger.LogError(ex, $"Error in method{MethodInfo.GetCurrentMethod().Name}\n {ex.Message}");
                 return null;
             }
-            finally
-            {
-                _logger.LogWarning(resultMessage);
-            }
+            
 
         }
 

@@ -25,7 +25,7 @@ namespace RestApi.Tests
                     new () {Age = 21, CurrentTime = DateTime.Now, Id = 3, Name = "valera", Surname = "ovechkin"},
                     new () {Age = 22, CurrentTime = DateTime.Now, Id = 4, Name = "roman", Surname = "sochin"}
                 };
-                var DbOptions = new DbContextOptionsBuilder<ApplicationContex>().UseInMemoryDatabase("TestUserDb").Options;
+                var DbOptions = new DbContextOptionsBuilder<ApplicationContex>().UseInMemoryDatabase($"TestUserDb{Guid.NewGuid()}").Options;
                 using (var dbContex = new ApplicationContex(DbOptions))
                 {
                     if (!dbContex.Users.Any())
@@ -38,6 +38,31 @@ namespace RestApi.Tests
                 return new ApplicationContex(DbOptions);
             }
         }
+
+        public void Get_Users_Moq_Test()
+        {
+            var users = new List<User>
+            {
+                new () {Age = 19, CurrentTime = DateTime.Now, Id = 1, Name = "taras", Surname = "krupko"},
+                new () {Age = 20, CurrentTime = DateTime.Now, Id = 2, Name = "ivan", Surname = "sidorov"},
+                new () {Age = 21, CurrentTime = DateTime.Now, Id = 3, Name = "valera", Surname = "ovechkin"},
+                new () {Age = 22, CurrentTime = DateTime.Now, Id = 4, Name = "roman", Surname = "sochin"}
+            };
+            var mockDbContext = new Mock<ApplicationContex>();
+            mockDbContext.Setup(d => d.Users)
+                .Returns(users);
+            mockDbContext.Setup(d => d.Users)
+                .ThrowsAsync(new Exception());
+
+            var service = new UserService(mockDbContext)
+
+                ser
+
+
+
+            mockDbContext.Object.Users.AddRange(users);
+        }
+
         [Fact]
         public async void Get_users_notNULL_test()
         {
@@ -104,6 +129,7 @@ namespace RestApi.Tests
         [InlineData(4)]
         [InlineData(2)]
         [InlineData(3)]
+        [InlineData(100)]
         public async void Delete_user_test(int Id)
         {
             // Arrange
@@ -115,8 +141,10 @@ namespace RestApi.Tests
             var result = await service.DeleteUserAsync(Id, new CancellationToken());
 
             // Assert
-
-            Assert.Equal(true, result);
+            if (Id==100)
+                Assert.Equal(false, result);
+            else
+                Assert.Equal(true, result);
         }
     }
 }
