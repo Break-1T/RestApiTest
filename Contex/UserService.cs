@@ -74,9 +74,10 @@ namespace Contex
                 {
                     _dbContext.Users.Remove(user.Result);
                     await _dbContext.SaveChangesAsync(cancellationToken);
+                    return true;
                 }
 
-                return true;
+                return false;
             }
             catch(Exception ex)
             {
