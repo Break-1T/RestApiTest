@@ -16,16 +16,16 @@ namespace RestApi.Tests
 {
     class UserControllerTests
     {
-        [Fact]
-        public void Test()
-        {
-            //Arrange
-            //var mock = new Mock<IUserService>();
-            //mock.Setup(repo => repo.GetUserAsync()).Returns();
-            //Act
-            //Assert
+    //    [Fact]
+    //    public void Test()
+    //    {
+    //        Arrange
+    //        var mock = new Mock<IUserService>();
+    //        mock.Setup(repo => repo.GetUserAsync()).Returns();
+    //        Act
+    //        Assert
 
-            //UserController user = new UserController(new Logger<UserController>(),new UserService());
-        }
+    //        UserController user = new UserController(new Logger<UserController>(), new UserService());
+    //    }
     }
 }

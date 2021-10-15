@@ -20,6 +20,7 @@ namespace Contex
         public UserService(ApplicationContex dbContext)
         {
             this._dbContext = dbContext;
+            _logger = new Logger<UserService>(new LoggerFactory(new List<ILoggerProvider>()));
         }
 
         public async Task<IEnumerable<User>> GetUserAsync(CancellationToken cancellationToken)
