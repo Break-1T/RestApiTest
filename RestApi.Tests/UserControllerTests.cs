@@ -18,29 +18,41 @@ namespace RestApi.Tests
 {
     public class UserControllerTests
     {
-        private ApplicationContex contex
+        private readonly Mock<ApplicationContex> _dbContextMock;
+        private readonly Mock<ILogger<UserController>> _userControllerloggerMock;
+        private readonly Mock<ILogger<UserService>> _userServiceloggerMock;
+
+
+        private readonly List<User> _usersList = new()
+        {
+            new() { Age = 19, CurrentTime = DateTime.Now, Id = 1, Name = "taras", Surname = "krupko" },
+            new() { Age = 20, CurrentTime = DateTime.Now, Id = 2, Name = "ivan", Surname = "sidorov" },
+            new() { Age = 21, CurrentTime = DateTime.Now, Id = 3, Name = "valera", Surname = "ovechkin" },
+            new() { Age = 22, CurrentTime = DateTime.Now, Id = 4, Name = "roman", Surname = "sochin" }
+        };
+
+        private ApplicationContex _appContex
         {
             get
             {
-                var users = new List<User>
-                {
-                    new () {Age = 19, CurrentTime = DateTime.Now, Id = 1, Name = "taras", Surname = "krupko"},
-                    new () {Age = 20, CurrentTime = DateTime.Now, Id = 2, Name = "ivan", Surname = "sidorov"},
-                    new () {Age = 21, CurrentTime = DateTime.Now, Id = 3, Name = "valera", Surname = "ovechkin"},
-                    new () {Age = 22, CurrentTime = DateTime.Now, Id = 4, Name = "roman", Surname = "sochin"}
-                };
-                var DbOptions = new DbContextOptionsBuilder<ApplicationContex>().UseInMemoryDatabase($"TestUserDb{Guid.NewGuid()}").Options;
-                using (var dbContex = new ApplicationContex(DbOptions))
-                {
-                    if (!dbContex.Users.Any())
-                    {
-                        dbContex.AddRange(users);
-                        dbContex.SaveChanges();
-                    }
-                }
+                var dbOptions = new DbContextOptionsBuilder<ApplicationContex>().UseInMemoryDatabase($"DB: {Guid.NewGuid()}").Options;
+                var appContex = new ApplicationContex(dbOptions);
 
-                return new ApplicationContex(DbOptions);
+                appContex.Users.AddRange(_usersList);
+                appContex.SaveChanges();
+                return appContex;
+
             }
+        }
+
+
+        public UserControllerTests()
+        {
+            _dbContextMock = new Mock<ApplicationContex>();
+
+            _userControllerloggerMock = new Mock<ILogger<UserController>>();
+
+            _userServiceloggerMock = new Mock<ILogger<UserService>>();
         }
 
         [Fact]
@@ -48,8 +60,8 @@ namespace RestApi.Tests
         {
             //Arrange
 
-            UserController user = new UserController(new Logger<UserController>(new NullLoggerFactory()),
-                new UserService(contex,new Logger<UserService>(new LoggerFactory())));
+            var user = new UserController(_userControllerloggerMock.Object,
+                new UserService(_appContex,_userServiceloggerMock.Object));
 
             //Act
 
@@ -71,8 +83,8 @@ namespace RestApi.Tests
         {
             //Arrange
 
-            UserController user = new UserController(new Logger<UserController>(new NullLoggerFactory()), new UserService(contex));
-
+            var user = new UserController(_userControllerloggerMock.Object,
+                new UserService(_appContex, _userServiceloggerMock.Object));
             //Act
 
             var result = await user.GetAsync(id);

@@ -17,7 +17,7 @@ namespace Contex
         private readonly ApplicationContex _dbContext;
         private readonly ILogger<UserService> _logger;
 
-        public UserService(ApplicationContex dbContext, Logger<UserService> logger)
+        public UserService(ApplicationContex dbContext, ILogger<UserService> logger)
         {
             this._dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
             this._logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -25,7 +25,6 @@ namespace Contex
 
         public async Task<IEnumerable<User>> GetUserAsync(CancellationToken cancellationToken)
         {
-            string resultMessage = $"Success: {MethodInfo.GetCurrentMethod().Name}";
             try
             {
                 var result = await this._dbContext.Users.ToListAsync(cancellationToken);
@@ -36,14 +35,10 @@ namespace Contex
                 _logger.LogError(ex, $"Error in method{MethodInfo.GetCurrentMethod().Name}\n {ex.Message}");
                 return null;
             }
-            
-
         }
 
         public async Task<User> GetUserAsync(int id,CancellationToken cancellationToken)
         {
-            string resultMessage = $"Success: {MethodInfo.GetCurrentMethod().Name}";
-
             try
             {
                 var result = await this._dbContext.Users.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
@@ -52,19 +47,13 @@ namespace Contex
             }
             catch (Exception ex)
             {
-                resultMessage = $"Error in method{MethodInfo.GetCurrentMethod().Name}\n {ex.Message}";
+                _logger.LogError(ex, $"Error in method{MethodInfo.GetCurrentMethod().Name}\n {ex.Message}");
                 return null;
             }
-            finally
-            {
-                _logger.LogWarning(resultMessage);
-            }
-
         }
 
         public async Task<bool> DeleteUserAsync(int id, CancellationToken cancellationToken)
         {
-            string resultMessage = $"Success: {MethodInfo.GetCurrentMethod().Name}";
             try
             {
                 var user = _dbContext.Users.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
@@ -79,19 +68,13 @@ namespace Contex
             }
             catch(Exception ex)
             {
-                resultMessage = $"Error in method{MethodInfo.GetCurrentMethod().Name}\n {ex.Message}";
+                _logger.LogError(ex, $"Error in method{MethodInfo.GetCurrentMethod().Name}\n {ex.Message}");
                 return false;
             }
-            finally
-            {
-                _logger.LogWarning(resultMessage);
-            }
-
         }
 
         public async Task<bool> AddUserAsync(CancellationToken cancellationToken)
         {
-            string resultMessage = $"Success: {MethodInfo.GetCurrentMethod().Name}";
             try
             {
                 _dbContext.Users.Add(new User() { Age = new Random().Next(0, 50), CurrentTime = DateTime.Now, Name = "user", Surname = "user" });
@@ -100,14 +83,9 @@ namespace Contex
             }
             catch(Exception ex)
             {
-                resultMessage = $"Error in method{MethodInfo.GetCurrentMethod().Name}\n {ex.Message}";
+                _logger.LogError(ex, $"Error in method{MethodInfo.GetCurrentMethod().Name}\n {ex.Message}");
                 return false;
             }
-            finally
-            {
-                _logger.LogWarning(resultMessage);
-            }
-
         }
     }
 }

@@ -7,7 +7,7 @@ namespace Contex
 {
     public class ApplicationContex : DbContext
     {
-        public DbSet<User> Users { get; set; }
+        public virtual DbSet<User> Users { get; set; }
 
         public ApplicationContex(){ }
         public ApplicationContex(DbContextOptions<ApplicationContex> options):base(options){ }
