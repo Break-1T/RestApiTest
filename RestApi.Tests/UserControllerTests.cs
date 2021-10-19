@@ -63,32 +63,39 @@ namespace RestApi.Tests
         {
             //Arrange
             
-            _userControllerMock.Setup(userController => userController.GetAsync()).Returns(Task.FromResult(_usersList));
+            var userController = new UserController(_userControllerloggerMock.Object, _userServiceMock.Object);
+            _userServiceMock.Setup(service => service.GetUserAsync(It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult(_usersList));
 
             //Act
 
-            var result = await _userControllerMock.Object.GetAsync();
+            var result = await userController.GetAsync();
 
             //Assert
 
             Assert.NotEmpty(result);
             Assert.Equal(_usersList.Count(), result.Count());
+
+            _userControllerloggerMock.VerifyNoOtherCalls();
         }
         [Fact]
         public async void GetAsync_NotNull_Test()
         {
             //Arrange
 
-            _userControllerMock.Setup(userController => userController.GetAsync()).Returns(Task.FromResult(_usersList));
-
+            var userController = new UserController(_userControllerloggerMock.Object, _userServiceMock.Object);
+            _userServiceMock.Setup(service => service.GetUserAsync(It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult(_usersList));
             //Act
 
-            var result = await _userControllerMock.Object.GetAsync();
+            var result = await userController.GetAsync();
 
             //Assert
 
             Assert.NotNull(result);
             Assert.Equal(_usersList.Count(),result.Count());
+
+            _userControllerloggerMock.VerifyNoOtherCalls();
         }
         [Fact]
         public async void GetAsync_Exception_Test()

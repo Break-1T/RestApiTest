@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Migrations", "Migrations\Mi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RestApi.Tests", "RestApi.Tests\RestApi.Tests.csproj", "{F75F92A0-EB69-41C5-8DAF-80BB0D34380D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RestApi.IntegrationTests", "RestApi.IntegrationTests\RestApi.IntegrationTests.csproj", "{E14DFA1D-C63D-4293-8033-F4F26E17D6A6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RestApi.Integration.Tests", "RestApi.IntegrationTests\RestApi.Integration.Tests.csproj", "{E14DFA1D-C63D-4293-8033-F4F26E17D6A6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

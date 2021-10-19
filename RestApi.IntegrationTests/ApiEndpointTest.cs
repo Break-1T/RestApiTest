@@ -2,9 +2,9 @@
 using Api;
 using Xunit;
 
-namespace RestApi.IntegrationTests
+namespace RestApi.Integration.Tests
 {
-    public class ApiEndpointTest:IClassFixture<TestWebApplicationFactory<Startup>>
+    public class ApiEndpointTest
     {
     }
 }

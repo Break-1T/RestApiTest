@@ -11,5 +11,6 @@ namespace Context.Models
         public string Surname { get; set; }
         public int  Age { get; set; }
         public DateTime CurrentTime { get; set; }
+        public List<Operation> Operations { get; set; }
     }
 }

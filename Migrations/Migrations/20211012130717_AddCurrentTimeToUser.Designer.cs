@@ -21,7 +21,7 @@ namespace Migrations.Migrations
                 .HasAnnotation("ProductVersion", "5.0.10")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-            modelBuilder.Entity("Contex.User", b =>
+            modelBuilder.Entity("Context.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()

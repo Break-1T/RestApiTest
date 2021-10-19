@@ -53,27 +53,6 @@ namespace RestApi.Tests
             }
         }
 
-
-        [Fact]
-        public async void Get_Users_Moq_Test()
-        {
-            // Arrange
-            //_dbContextMock.Setup(u => u.Users).Returns(AppContext.Users);
-            //_dbContextMock.Setup(u => u.Users).Returns(_usersList);
-
-
-            var service = new UserService(_dbContextMock.Object, _loggerMock.Object);
-
-            //Arrange
-
-            var result = await service.GetUserAsync(new CancellationToken());
-
-            //Assert
-            _dbContextMock.VerifyNoOtherCalls();
-            _loggerMock.VerifyNoOtherCalls();
-            Assert.NotEmpty(result);
-        }
-
         [Fact]
         public async void Get_users_test()
         {

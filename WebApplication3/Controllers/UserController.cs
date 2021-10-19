@@ -16,7 +16,7 @@ namespace Api.Controllers
     [Route("[controller]")]
     public class UserController : ControllerBase
     {
-        public UserController() { }
+        //public UserController() { }
         public UserController(ILogger<UserController> logger, IUserService service)
         {
             this._logger = logger;
