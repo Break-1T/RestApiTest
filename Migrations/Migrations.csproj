@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Contex\Contex.csproj" />
+    <ProjectReference Include="..\Contex\Context.csproj" />
   </ItemGroup>    
 
 </Project>

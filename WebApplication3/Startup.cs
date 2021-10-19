@@ -13,10 +13,10 @@ using System.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Contex;
-using Contex.Infrastructure;
+using Context;
+using Context.Infrastructure;
 
-namespace WebApplication3
+namespace Api
 {
     public class Startup
     {
@@ -34,7 +34,7 @@ namespace WebApplication3
             services.AddControllers();
             services.AddTransient<IUserService, UserService>();
             services.AddEntityFrameworkNpgsql()
-                .AddDbContext<ApplicationContex>(x=>
+                .AddDbContext<RestApiContext>(x=>
                     x.UseNpgsql(Configuration.GetConnectionString("DatabaseConnection"),
                         b=>b
                             .MigrationsAssembly("Migrations")));

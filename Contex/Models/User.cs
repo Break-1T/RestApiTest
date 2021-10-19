@@ -1,11 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace Contex.Models
+namespace Context.Models
 {
     public class User
     {
-        [Key]
         public int Id { get; set; }
         public string Name { get; set; }
         public string Surname { get; set; }

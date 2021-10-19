@@ -17,8 +17,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Contex\Contex.csproj" />
-    <ProjectReference Include="..\WebApplication3\WebApplication3.csproj" />
+    <ProjectReference Include="..\Contex\Context.csproj" />
+    <ProjectReference Include="..\WebApplication3\Api.csproj" />
   </ItemGroup>
 
 </Project>

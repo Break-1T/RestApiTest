@@ -6,80 +6,99 @@ using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
-using Contex;
-using Contex.Models;
-using Contex.Infrastructure;
+using Context;
+using Context.Models;
+using Context.Infrastructure;
 
-namespace WebApplication3.Controllers
+namespace Api.Controllers
 {
     [ApiController]
     [Route("[controller]")]
     public class UserController : ControllerBase
     {
-        private readonly ILogger<UserController> _logger;
-        private readonly IUserService _service;
-        private readonly CancellationToken token;
-
+        public UserController() { }
         public UserController(ILogger<UserController> logger, IUserService service)
         {
-            _logger = logger;
+            this._logger = logger;
             this._service = service;
             token = new CancellationToken();
         }
 
-        [HttpGet]
-        public async Task<IEnumerable<User>> GetAsync()
-        {
+        private readonly ILogger<UserController> _logger;
+        private readonly IUserService _service;
+        private readonly CancellationToken token;
 
+        [HttpGet]
+        public virtual async Task<IEnumerable<User>> GetAsync()
+        {
             //var l = new List<User>();
             //return this.Ok(l);
-            var result = await _service.GetUserAsync(token);
-            if (result.Any())
+            try
             {
-                _logger.LogWarning("Success");
+                var result = await _service.GetUserAsync(token);
+                if (result == null)
+                    throw new Exception();
+                return result;
             }
-            else
+            catch (Exception e)
             {
-                _logger.LogWarning("Error");
+                _logger.Log(LogLevel.Error,e,e.Message);
+                return null;
             }
-            return result;
+
         }
         [HttpGet("{id}",Name="GetAsync")]
-        public async Task<User> GetAsync(int id)
+        public virtual async Task<User> GetAsync(int id)
         {
-
             //var l = new List<User>();
             //return this.Ok(l);
-            var result = await _service.GetUserAsync(id, token);
-            if (result!=null)
+            try
             {
-                _logger.LogWarning("Success");
+                var result = await _service.GetUserAsync(id, token);
+                if (result == null)
+                    throw new Exception();
+                return result;
             }
-            else
+            catch (Exception e)
             {
-                _logger.LogWarning("Error");
+                _logger.Log(LogLevel.Error, e, e.Message);
+                return null;
             }
-            return result;
+
         }
 
         [HttpDelete("{id}",Name = "DeleteAsync")]
-        public async void DeleteAsync(int id)
+        public virtual async Task<bool> DeleteAsync(int id)
         {
-            if (await _service.DeleteUserAsync(id, token))
+            try
             {
-                _logger.LogWarning("Success");
+                var result = await _service.DeleteUserAsync(id, token);
+                if (result==false)
+                    throw new Exception();
+                return true;
+            }
+            catch (Exception e)
+            {
+                _logger.Log(LogLevel.Error, e, e.Message);
+                return false;
             }
         }
 
         [HttpPost]
-        public async void PostAsync()
+        public virtual async Task<bool> PostAsync()
         {
-            if (await _service.AddUserAsync(token))
+            try
             {
-                _logger.LogWarning("Success");
-
+                var result = await _service.AddUserAsync(token);
+                if (result == false)
+                    throw new Exception();
+                return true;
+            }
+            catch (Exception e)
+            {
+                _logger.Log(LogLevel.Error, e, e.Message);
+                return false;
             }
         }
-       
     }
 }

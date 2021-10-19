@@ -6,9 +6,10 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Castle.Core.Logging;
-using Contex;
-using Contex.Models;
+using Context;
+using Context.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore.Query.Internal;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -22,12 +23,12 @@ namespace RestApi.Tests
     {
         public UserServiceTests()
         {
-            _dbContextMock = new Mock<ApplicationContex>(new DbContextOptions<ApplicationContex>());
+            _dbContextMock = new Mock<RestApiContext>(new DbContextOptions<RestApiContext>());
 
             _loggerMock = new Mock<ILogger<UserService>>();
         }
 
-        private readonly Mock<ApplicationContex> _dbContextMock;
+        private readonly Mock<RestApiContext> _dbContextMock;
         private readonly Mock<ILogger<UserService>> _loggerMock;
 
         private readonly List<User> _usersList = new ()
@@ -38,12 +39,12 @@ namespace RestApi.Tests
             new() {Age = 22, CurrentTime = DateTime.Now, Id = 4, Name = "roman", Surname = "sochin"}
         };
 
-        private ApplicationContex _appContex 
+        private RestApiContext AppContext 
         {
             get
             {
-                var dbOptions = new DbContextOptionsBuilder<ApplicationContex>().UseInMemoryDatabase($"DB: {Guid.NewGuid()}").Options;
-                var appContex = new ApplicationContex(dbOptions);
+                var dbOptions = new DbContextOptionsBuilder<RestApiContext>().UseInMemoryDatabase($"DB: {Guid.NewGuid()}").Options;
+                var appContex = new RestApiContext(dbOptions);
                 
                 appContex.Users.AddRange(_usersList);
                 appContex.SaveChanges();
@@ -57,7 +58,7 @@ namespace RestApi.Tests
         public async void Get_Users_Moq_Test()
         {
             // Arrange
-            //_dbContextMock.Setup(u => u.Users).Returns(_appContex.Users);
+            //_dbContextMock.Setup(u => u.Users).Returns(AppContext.Users);
             //_dbContextMock.Setup(u => u.Users).Returns(_usersList);
 
 
@@ -78,7 +79,7 @@ namespace RestApi.Tests
         {
             // Arrange
 
-            UserService service = new UserService(_appContex, _loggerMock.Object);
+            UserService service = new UserService(AppContext, _loggerMock.Object);
 
             // Act
 
@@ -94,10 +95,13 @@ namespace RestApi.Tests
         public async void Get_users_Exception_test()
         {
             // Arrange
+            
             var excep = new Exception("Get_users_Exception_test");
-            _dbContextMock.Setup(db=>db.Users)
+            //var intDbSet = new Mock<InternalDbSet<User>>();
+            _dbContextMock.Setup(db => db.Users)
                 .Throws(excep);
-            UserService service = new UserService(_dbContextMock.Object, _loggerMock.Object);
+            //_dbContextMock.Setup(db => db.Users).Returns(intDbSet.Object);
+            var service = new UserService(_dbContextMock.Object, _loggerMock.Object);
             
 
             // Act
@@ -108,18 +112,17 @@ namespace RestApi.Tests
 
             Assert.Null(result);
             
-            _loggerMock.Verify(
-                x => x.Log(
-                    LogLevel.Information,
-                    It.IsAny<EventId>(),
-                    It.Is<It.IsAnyType>((o, t) => string.Equals("Index page say hello", o.ToString(), StringComparison.InvariantCultureIgnoreCase)),
-                    It.IsAny<Exception>(),
-                    (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()),
+            _dbContextMock.Verify(mockDbContext => mockDbContext.Users, Times.Once);
+            _loggerMock.Verify(x=>x.Log(
+                LogLevel.Error,
+                It.IsAny<EventId>(),
+                It.IsAny<It.IsAnyType>(),
+                excep,
+                (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()),
                 Times.Once);
 
-
-            _loggerMock.VerifyNoOtherCalls();
             //_dbContextMock.VerifyNoOtherCalls();
+            _loggerMock.VerifyNoOtherCalls();
         }
         
         [Fact]
@@ -127,7 +130,7 @@ namespace RestApi.Tests
         {
             // Arrange
 
-            UserService service = new UserService(_appContex, _loggerMock.Object);
+            UserService service = new UserService(AppContext, _loggerMock.Object);
             int id = 2;
             // Act
 
@@ -169,7 +172,7 @@ namespace RestApi.Tests
         {
             // Arrange
 
-            UserService service = new UserService(_appContex, _loggerMock.Object);
+            UserService service = new UserService(AppContext, _loggerMock.Object);
 
             // Act
 
@@ -213,7 +216,7 @@ namespace RestApi.Tests
         {
             // Arrange
 
-            UserService service = new UserService(_appContex, _loggerMock.Object);
+            UserService service = new UserService(AppContext, _loggerMock.Object);
 
             // Act
 

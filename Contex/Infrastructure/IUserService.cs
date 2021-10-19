@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Contex.Models;
+using Context.Models;
 
-namespace Contex.Infrastructure
+namespace Context.Infrastructure
 {
     public interface IUserService
     {

@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Contex\Contex.csproj" />
+    <ProjectReference Include="..\Contex\Context.csproj" />
     <ProjectReference Include="..\Migrations\Migrations.csproj" />
   </ItemGroup>
 
