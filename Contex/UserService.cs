@@ -74,11 +74,11 @@ namespace Context
             }
         }
 
-        public virtual async Task<bool> AddUserAsync(CancellationToken cancellationToken)
+        public virtual async Task<bool> AddUserAsync(User User, CancellationToken cancellationToken)
         {
             try
             {
-                _dbContext.Users.Add(new User() { Age = new Random().Next(0, 50), CurrentTime = DateTime.Now, Name = "user", Surname = "user" });
+                _dbContext.Users.Add(User);
                 await _dbContext.SaveChangesAsync(cancellationToken);
                 return true;
             }

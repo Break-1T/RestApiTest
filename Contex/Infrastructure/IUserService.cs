@@ -28,6 +28,6 @@ namespace Context.Infrastructure
         /// <summary>
         /// Add new user
         /// </summary>
-        public Task<bool> AddUserAsync(CancellationToken cancellationToken);
+        public Task<bool> AddUserAsync(User User,CancellationToken cancellationToken);
     }
 }

@@ -20,19 +20,25 @@ namespace Context
             {
                 entity.ToTable("Users");
                 entity.HasKey(user => user.Id);
+
                 entity.Property(user => user.Id).ValueGeneratedOnAdd();
                 entity.Property(user => user.Surname).IsRequired();
                 entity.Property(user => user.Age);
                 entity.Property(user => user.CurrentTime);
-                entity.HasMany(user => user.Operations).WithOne(operation => operation.User);
+
+                //Сделать не каскадное удаление
+                entity.HasMany(user => user.Operations)
+                    .WithOne(operation => operation.User).OnDelete(DeleteBehavior.ClientSetNull);
             });
 
             modelBuilder.Entity<Operation>(entity =>
             {
                entity.ToTable("Operations").HasKey(operation => operation.Id);
+
                entity.Property(operation => operation.Id).ValueGeneratedOnAdd();
                entity.Property(operation => operation.Name).IsRequired();
                entity.Property(operation => operation.DateTime).IsRequired();
+
                entity.HasOne(operation => operation.User).WithMany(user => user.Operations);
             });
 

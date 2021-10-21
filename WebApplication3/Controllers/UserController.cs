@@ -6,9 +6,14 @@ using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
+using Api.Infrastructure;
+using Api.Infrastructure.Extensions;
+using Api.Models;
 using Context;
 using Context.Models;
 using Context.Infrastructure;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace Api.Controllers
 {
@@ -28,77 +33,71 @@ namespace Api.Controllers
         private readonly IUserService _service;
         private readonly CancellationToken token;
 
-        [HttpGet]
-        public virtual async Task<IEnumerable<User>> GetAsync()
+        [HttpGet("list")]
+        [ProducesResponseType(StatusCodes.Status200OK,Type = typeof(List<User>))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public virtual async Task<ActionResult<List<User>>> GetUsersAsync()
         {
             //var l = new List<User>();
             //return this.Ok(l);
-            try
+
+            var result = (await _service.GetUserAsync(token)).ToUserListApiModel();
+            if (result == null)
             {
-                var result = await _service.GetUserAsync(token);
-                if (result == null)
-                    throw new Exception();
-                return result;
-            }
-            catch (Exception e)
-            {
-                _logger.Log(LogLevel.Error,e,e.Message);
-                return null;
+                _logger.LogWarning("DbException");
+                return this.BadRequest("DbException");
             }
 
+            return this.Ok(result);
         }
-        [HttpGet("{id}",Name="GetAsync")]
-        public virtual async Task<User> GetAsync(int id)
+        
+        [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(User))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public virtual async Task<ActionResult<User>> GetUserAsync(int id)
         {
-            //var l = new List<User>();
-            //return this.Ok(l);
-            try
+            var result = (await _service.GetUserAsync(id, token)).ToUserApiModel();
+            if (result == null)
             {
-                var result = await _service.GetUserAsync(id, token);
-                if (result == null)
-                    throw new Exception();
-                return result;
+                _logger.LogWarning("DbException");
+                return this.BadRequest("DbException");
             }
-            catch (Exception e)
-            {
-                _logger.Log(LogLevel.Error, e, e.Message);
-                return null;
-            }
-
+            return this.Ok(result);
         }
 
-        [HttpDelete("{id}",Name = "DeleteAsync")]
-        public virtual async Task<bool> DeleteAsync(int id)
+        [HttpDelete("delete/{id}", Name = "delete")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(bool))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public virtual async Task<IActionResult> DeleteAsync(int id)
         {
-            try
+            var result = await _service.DeleteUserAsync(id, token);
+            if (result == false)
             {
-                var result = await _service.DeleteUserAsync(id, token);
-                if (result==false)
-                    throw new Exception();
-                return true;
+                _logger.LogWarning("DbException");
+                return this.BadRequest("DbException");
             }
-            catch (Exception e)
-            {
-                _logger.Log(LogLevel.Error, e, e.Message);
-                return false;
-            }
+            return this.Ok(result);
         }
 
-        [HttpPost]
-        public virtual async Task<bool> PostAsync()
+        [HttpPost("create", Name = "create")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(User))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public virtual async Task<IActionResult> CreateUserAsync([FromBody]UserApiModel user)
         {
-            try
+            var result = await _service.AddUserAsync(user.ToUser(),token);
+
+            if (result == false)
             {
-                var result = await _service.AddUserAsync(token);
-                if (result == false)
-                    throw new Exception();
-                return true;
+                _logger.LogWarning("DbException");
+                return this.BadRequest("DbException");
             }
-            catch (Exception e)
+
+            if (ModelState.IsValid)
             {
-                _logger.Log(LogLevel.Error, e, e.Message);
-                return false;
+                return this.CreatedAtAction("CreateUser", new { id = user.Id }, user);
             }
+
+            return this.NotFound();
         }
     }
 }

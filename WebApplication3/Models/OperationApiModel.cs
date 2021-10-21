@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using Context.Models;
 
-namespace Context.Models
+namespace Api.Models
 {
-    public class Operation
+    public class OperationApiModel
     {
         public int Id { get; set; }
         public string Name { get; set; }
