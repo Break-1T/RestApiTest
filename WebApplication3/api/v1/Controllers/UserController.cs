@@ -3,17 +3,20 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Api.v1.Models;
+using Api.api.v1.Models;
+using Api.Infrastructure.Attributes;
 using AutoMapper;
 using Context.Infrastructure;
 using Microsoft.AspNetCore.Http;
 using DbUser = Context.Models.User;
+using System.Reflection;
 
-namespace Api.v1.Controllers
+namespace Api.api.v1.Controllers
 {
-    [ApiVersion("1.0")]
+    //[V1]
+    [Version("V1")]
     [ApiController]
-    [Route("v{version:apiVersion}/[controller]")]
+    [Route("{}/[controller]")]
     public class UserController : ControllerBase
     {
         //public UserController() { }

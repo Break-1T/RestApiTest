@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Context.Models;
 
-namespace Api.v1.Models
+namespace Api.api.v1.Models
 {
     public class User
     {
