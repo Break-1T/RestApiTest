@@ -11,7 +11,10 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
+using Api.Infrastructure.Profiles;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Context;
 using Context.Infrastructure;
@@ -30,14 +33,25 @@ namespace Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
             services.AddControllers();
+
+            services.AddApiVersioning(ver =>
+            {
+                ver.ReportApiVersions = true;
+                ver.AssumeDefaultVersionWhenUnspecified = true;
+                ver.DefaultApiVersion = new ApiVersion(1, 0);
+            });
+
+            services.AddAutoMapper(typeof(Startup));
+
             services.AddTransient<IUserService, UserService>();
+            
             services.AddEntityFrameworkNpgsql()
-                .AddDbContext<RestApiContext>(x=>
-                    x.UseNpgsql(Configuration.GetConnectionString("DatabaseConnection"),
-                        b=>b
+                .AddDbContext<RestApiContext>(optionsBuilder=>
+                    optionsBuilder.UseNpgsql(Configuration.GetConnectionString("DatabaseConnection"),
+                        contextOptionsBuilder=>contextOptionsBuilder
                             .MigrationsAssembly("Migrations")));
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebApplication3", Version = "v1" });
@@ -52,6 +66,10 @@ namespace Api
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebApplication3 v1"));
+            }
+            else
+            {
+                app.UseExceptionHandler("/home/error");
             }
 
             app.UseHttpsRedirection();

@@ -1,54 +1,50 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
-using Api.Infrastructure;
-using Api.Infrastructure.Extensions;
-using Api.Models;
-using Context;
-using Context.Models;
+using Api.v1.Models;
+using AutoMapper;
 using Context.Infrastructure;
 using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using DbUser = Context.Models.User;
 
-namespace Api.Controllers
+namespace Api.v1.Controllers
 {
+    [ApiVersion("1.0")]
     [ApiController]
-    [Route("[controller]")]
+    [Route("v{version:apiVersion}/[controller]")]
     public class UserController : ControllerBase
     {
         //public UserController() { }
-        public UserController(ILogger<UserController> logger, IUserService service)
+        public UserController(ILogger<UserController> logger, IUserService service,IMapper mapper)
         {
             this._logger = logger;
             this._service = service;
-            token = new CancellationToken();
+            this.token = new CancellationToken();
+            this._mapper = mapper;
         }
 
         private readonly ILogger<UserController> _logger;
         private readonly IUserService _service;
         private readonly CancellationToken token;
+        private readonly IMapper _mapper;
 
         [HttpGet("list")]
         [ProducesResponseType(StatusCodes.Status200OK,Type = typeof(List<User>))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public virtual async Task<ActionResult<List<User>>> GetUsersAsync()
         {
-            //var l = new List<User>();
-            //return this.Ok(l);
+            var contextUser = await _service.GetUserAsync(token);
 
-            var result = (await _service.GetUserAsync(token)).ToUserListApiModel();
-            if (result == null)
+            var apiUser = _mapper.Map<IEnumerable<User>>(contextUser);
+            if (apiUser == null)
             {
                 _logger.LogWarning("DbException");
                 return this.BadRequest("DbException");
             }
 
-            return this.Ok(result);
+            return this.Ok(apiUser);
         }
         
         [HttpGet("{id}")]
@@ -56,16 +52,18 @@ namespace Api.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public virtual async Task<ActionResult<User>> GetUserAsync(int id)
         {
-            var result = (await _service.GetUserAsync(id, token)).ToUserApiModel();
-            if (result == null)
+            var contextUser = await _service.GetUserAsync(id, token);
+
+            var apiUser = _mapper.Map<User>(contextUser);
+            if (apiUser == null)
             {
                 _logger.LogWarning("DbException");
                 return this.BadRequest("DbException");
             }
-            return this.Ok(result);
+            return this.Ok(apiUser);
         }
 
-        [HttpDelete("delete/{id}", Name = "delete")]
+        [HttpDelete("delete/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(bool))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public virtual async Task<IActionResult> DeleteAsync(int id)
@@ -79,25 +77,22 @@ namespace Api.Controllers
             return this.Ok(result);
         }
 
-        [HttpPost("create", Name = "create")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(User))]
+        [HttpPost("create")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(bool))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public virtual async Task<IActionResult> CreateUserAsync([FromBody]UserApiModel user)
+        public virtual async Task<IActionResult> CreateUserAsync([FromBody] User user)
         {
-            var result = await _service.AddUserAsync(user.ToUser(),token);
+            var contextUser = _mapper.Map<DbUser>(user);
+
+            var result = await _service.AddUserAsync(contextUser, token);
 
             if (result == false)
             {
                 _logger.LogWarning("DbException");
                 return this.BadRequest("DbException");
             }
-
-            if (ModelState.IsValid)
-            {
-                return this.CreatedAtAction("CreateUser", new { id = user.Id }, user);
-            }
-
-            return this.NotFound();
+            return this.CreatedAtAction("CreateUser", new { id = user.Id }, user);
+            
         }
     }
 }

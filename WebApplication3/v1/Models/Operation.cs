@@ -4,9 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Context.Models;
 
-namespace Api.Models
+namespace Api.v1.Models
 {
-    public class OperationApiModel
+    public class Operation
     {
         public int Id { get; set; }
         public string Name { get; set; }

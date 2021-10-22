@@ -6,9 +6,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Context.Models;
 
-namespace Api.Models
+namespace Api.v1.Models
 {
-    public class UserApiModel
+    public class User
     {
         public int Id { get; set; }
 

@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using Xunit;
 using Api;
 using Api.Infrastructure.Extensions;
-using Api.Models;
+using Api.v1.Models;
 using Context.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
@@ -20,6 +20,8 @@ using HttpMethod = Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpMe
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Text.Json;
 using System.Threading;
+using AutoMapper;
+using User = Api.v1.Models.User;
 
 namespace RestApi.Integration.Tests
 {
@@ -44,7 +46,7 @@ namespace RestApi.Integration.Tests
             
             var response = await client.GetAsync("User/list");
 
-            var userApiModels = await response.Content.ReadFromJsonAsync<List<UserApiModel>>();
+            var userApiModels = await response.Content.ReadFromJsonAsync<List<User>>();
 
             // Assert
 
@@ -64,10 +66,10 @@ namespace RestApi.Integration.Tests
 
             var response = await client.GetAsync("User/error");
             
-            List<UserApiModel> userApiModels;
+            List<User> userApiModels;
             try
             {
-                userApiModels = await response.Content.ReadFromJsonAsync<List<UserApiModel>>();
+                userApiModels = await response.Content.ReadFromJsonAsync<List<User>>();
             }
             catch
             {
@@ -95,7 +97,7 @@ namespace RestApi.Integration.Tests
             // Act
 
             var response = await client.GetAsync($"User/{id}");
-            var user = await response.Content.ReadFromJsonAsync<UserApiModel>();
+            var user = await response.Content.ReadFromJsonAsync<User>();
 
             // Assert
 
@@ -114,10 +116,10 @@ namespace RestApi.Integration.Tests
             // Act
 
             var response = await client.GetAsync($"User/{999999}");
-            UserApiModel user;
+            User user;
             try
             {
-                user = await response.Content.ReadFromJsonAsync<UserApiModel>();
+                user = await response.Content.ReadFromJsonAsync<User>();
             }
             catch
             {
@@ -136,7 +138,7 @@ namespace RestApi.Integration.Tests
             // Arrange
             
             var httpRequest = new HttpRequestMessage(System.Net.Http.HttpMethod.Post, "User/create");
-            var userApi = new UserApiModel()
+            var userApi = new User()
             {
                 Name = "One",
                 Surname = "Two",
@@ -161,16 +163,15 @@ namespace RestApi.Integration.Tests
         public async Task CreateUserAsync_Exception_userAge_limit_400_Test()
         {
             // Arrange
-            
-            var userApi = new UserApiModel
+            var userApi = new User
             {
                 Name = "One",
                 Surname = "Two",
-                Age = 120,
+                Age = 400,
                 CurrentTime = DateTime.Now,
                 Operations = null
             };
-
+            
             string jsonUser = JsonSerializer.Serialize(userApi);
 
             var httpRequest = new HttpRequestMessage(System.Net.Http.HttpMethod.Post, "User/create");
