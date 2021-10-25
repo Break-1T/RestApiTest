@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Api.api.v1.Models;
@@ -10,16 +8,15 @@ using AutoMapper;
 using Context.Infrastructure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using DbUser = Context.Models.User;
 
 
 namespace Api.api.v2.Controllers
 {
     [ApiController]
     [V2,ApiRoute]
-    public class User2Controller : Controller
+    public class UserController : Controller
     {
-        public User2Controller(ILogger<v1.Controllers.UserController> logger, IUserService service, IMapper mapper)
+        public UserController(ILogger<UserController> logger, IUserService service, IMapper mapper)
         {
             this._logger = logger;
             this._service = service;
@@ -27,7 +24,7 @@ namespace Api.api.v2.Controllers
             this._mapper = mapper;
         }
 
-        private readonly ILogger<v1.Controllers.UserController> _logger;
+        private readonly ILogger<UserController> _logger;
         private readonly IUserService _service;
         private readonly CancellationToken token;
         private readonly IMapper _mapper;

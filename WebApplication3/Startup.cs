@@ -20,6 +20,9 @@ using Context;
 using Context.Infrastructure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Microsoft.Extensions.Options;
+using Swashbuckle.AspNetCore.SwaggerGen;
+using Swashbuckle.AspNetCore.SwaggerUI;
 
 namespace Api
 {
@@ -36,12 +39,15 @@ namespace Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddVersionedApiExplorer();
-            services.AddApiVersioning(o => { o.ReportApiVersions = true; }).AddVersionedApiExplorer(options =>
+            //services.AddVersionedApiExplorer(opt => opt.GroupNameFormat = "'v'VVV");
+            services.AddApiVersioning(o => { o.ReportApiVersions = true; })
+                .AddVersionedApiExplorer(options =>
             {
                 options.GroupNameFormat = "'v'VVV";
                 options.SubstituteApiVersionInUrl = true;
             });
+
+
 
             services.AddAutoMapper(typeof(Startup));
 
@@ -53,7 +59,19 @@ namespace Api
                         contextOptionsBuilder => contextOptionsBuilder
                             .MigrationsAssembly("Migrations")));
 
-            services.AddSwaggerGen();
+            services.AddSwaggerGen(option =>
+            {
+                option.SwaggerDoc("v2", new OpenApiInfo()
+                {
+                    Title = "V2",
+                    Version = "v2"
+                });
+                option.SwaggerDoc("v1", new OpenApiInfo()
+                {
+                    Title = "V1",
+                    Version = "v1"
+                });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -75,6 +93,7 @@ namespace Api
                         await context.Response.WriteAsync(
                             string.Join(Environment.NewLine, options.ConfigObject.Urls.Select(
                                 descriptor => $"{descriptor.Name} {descriptor.Url}"))).ConfigureAwait(false)));
+                    options.DocExpansion(DocExpansion.List);
                 });
             }
             else

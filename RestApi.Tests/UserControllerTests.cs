@@ -65,7 +65,7 @@ namespace RestApi.Tests
         //{
         //    //Arrange
             
-        //    var userController = new User2Controller(_userControllerloggerMock.Object, _userServiceMock.Object);
+        //    var userController = new UserController(_userControllerloggerMock.Object, _userServiceMock.Object);
         //    _userServiceMock.Setup(service => service.GetUserAsync(It.IsAny<CancellationToken>()))
         //        .Returns(Task.FromResult(_usersList));
 
@@ -85,7 +85,7 @@ namespace RestApi.Tests
         //{
         //    //Arrange
 
-        //    var userController = new User2Controller(_userControllerloggerMock.Object, _userServiceMock.Object);
+        //    var userController = new UserController(_userControllerloggerMock.Object, _userServiceMock.Object);
         //    _userServiceMock.Setup(service => service.GetUserAsync(It.IsAny<CancellationToken>()))
         //        .Returns(Task.FromResult(_usersList));
         //    //Act
@@ -106,7 +106,7 @@ namespace RestApi.Tests
 
         //    var exception = new Exception("GetAsync_Exception_Test");
         //    _userServiceMock.Setup(userService => userService.GetUserAsync(It.IsAny<CancellationToken>())).Throws(exception);
-        //    var userController = new User2Controller(_userControllerloggerMock.Object,_userServiceMock.Object);
+        //    var userController = new UserController(_userControllerloggerMock.Object,_userServiceMock.Object);
 
         //    //Act
 
@@ -138,7 +138,7 @@ namespace RestApi.Tests
         //{
         //    //Arrange
 
-        //    var user = new User2Controller(_userControllerloggerMock.Object,
+        //    var user = new UserController(_userControllerloggerMock.Object,
         //        new UserService(AppContext, _userServiceloggerMock.Object));
         //    //Act
 

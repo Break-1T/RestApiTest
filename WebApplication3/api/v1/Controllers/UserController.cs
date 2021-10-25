@@ -18,7 +18,7 @@ namespace Api.api.v1.Controllers
     [V1,ApiRoute]
     public class UserController : ControllerBase
     {
-        //public User2Controller() { }
+        //public UserController() { }
         public UserController(ILogger<UserController> logger, IUserService service,IMapper mapper)
         {
             this._logger = logger;
