@@ -5,12 +5,12 @@ using System.Linq;
 using System.Reflection.Metadata.Ecma335;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using Api.v1.Models;
+using Api.api.v1.Models;
 using Context.Models;
 using System.Text.Json;
 using AutoMapper;
-using Operation = Api.v1.Models.Operation;
-using User = Api.v1.Models.User;
+using Operation = Api.api.v1.Models.Operation;
+using User = Api.api.v1.Models.User;
 
 namespace Api.Infrastructure.Extensions
 {

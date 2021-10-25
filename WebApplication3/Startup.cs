@@ -18,6 +18,8 @@ using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Context;
 using Context.Infrastructure;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 
 namespace Api
 {
@@ -34,38 +36,46 @@ namespace Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-
-            services.AddApiVersioning(ver =>
+            services.AddVersionedApiExplorer();
+            services.AddApiVersioning(o => { o.ReportApiVersions = true; }).AddVersionedApiExplorer(options =>
             {
-                ver.ReportApiVersions = true;
-                ver.AssumeDefaultVersionWhenUnspecified = true;
-                ver.DefaultApiVersion = new ApiVersion(1, 0);
+                options.GroupNameFormat = "'v'VVV";
+                options.SubstituteApiVersionInUrl = true;
             });
 
             services.AddAutoMapper(typeof(Startup));
 
             services.AddTransient<IUserService, UserService>();
-            
+
             services.AddEntityFrameworkNpgsql()
-                .AddDbContext<RestApiContext>(optionsBuilder=>
+                .AddDbContext<RestApiContext>(optionsBuilder =>
                     optionsBuilder.UseNpgsql(Configuration.GetConnectionString("DatabaseConnection"),
-                        contextOptionsBuilder=>contextOptionsBuilder
+                        contextOptionsBuilder => contextOptionsBuilder
                             .MigrationsAssembly("Migrations")));
 
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebApplication3", Version = "v1" });
-            });
+            services.AddSwaggerGen();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IApiVersionDescriptionProvider apiDescriptionProvider)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebApplication3 v1"));
+                app.UseSwaggerUI(options =>
+                {
+                    // build a swagger endpoint for each discovered API version
+                    foreach (var description in apiDescriptionProvider.ApiVersionDescriptions)
+                    {
+                        options.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json", description.GroupName.ToUpperInvariant());
+                    }
+
+                    app.Map($"/swagger/versions_info", builder => builder.Run(async context =>
+                        await context.Response.WriteAsync(
+                            string.Join(Environment.NewLine, options.ConfigObject.Urls.Select(
+                                descriptor => $"{descriptor.Name} {descriptor.Url}"))).ConfigureAwait(false)));
+                });
             }
             else
             {

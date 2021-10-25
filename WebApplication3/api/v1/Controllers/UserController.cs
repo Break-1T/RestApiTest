@@ -11,15 +11,14 @@ using Microsoft.AspNetCore.Http;
 using DbUser = Context.Models.User;
 using System.Reflection;
 
+
 namespace Api.api.v1.Controllers
 {
-    //[V1]
-    [Version("V1")]
     [ApiController]
-    [Route("{}/[controller]")]
+    [V1,ApiRoute]
     public class UserController : ControllerBase
     {
-        //public UserController() { }
+        //public User2Controller() { }
         public UserController(ILogger<UserController> logger, IUserService service,IMapper mapper)
         {
             this._logger = logger;
@@ -32,39 +31,6 @@ namespace Api.api.v1.Controllers
         private readonly IUserService _service;
         private readonly CancellationToken token;
         private readonly IMapper _mapper;
-
-        [HttpGet("list")]
-        [ProducesResponseType(StatusCodes.Status200OK,Type = typeof(List<User>))]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public virtual async Task<ActionResult<List<User>>> GetUsersAsync()
-        {
-            var contextUser = await _service.GetUserAsync(token);
-
-            var apiUser = _mapper.Map<IEnumerable<User>>(contextUser);
-            if (apiUser == null)
-            {
-                _logger.LogWarning("DbException");
-                return this.BadRequest("DbException");
-            }
-
-            return this.Ok(apiUser);
-        }
-        
-        [HttpGet("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(User))]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public virtual async Task<ActionResult<User>> GetUserAsync(int id)
-        {
-            var contextUser = await _service.GetUserAsync(id, token);
-
-            var apiUser = _mapper.Map<User>(contextUser);
-            if (apiUser == null)
-            {
-                _logger.LogWarning("DbException");
-                return this.BadRequest("DbException");
-            }
-            return this.Ok(apiUser);
-        }
 
         [HttpDelete("delete/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(bool))]

@@ -6,25 +6,16 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Routing;
 using System.Reflection;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Versioning;
 
 
 namespace Api.Infrastructure.Attributes
 {
     [AttributeUsage(AttributeTargets.Class)]
-    public class VersionAttribute : Attribute,IRouteTemplateProvider
+    public class V1 : ApiVersionAttribute
     {
-        public string Template { get; }
-        public int? Order { get; }
-        public string Name { get; set; }
-        public VersionAttribute([ApiExplorerSettings] )
+        public V1() : base(new ApiVersion(1, 0))
         {
-            Name = name;
-            Ge
-        }
-
-        public void Show()
-        {
-
         }
     }
 }

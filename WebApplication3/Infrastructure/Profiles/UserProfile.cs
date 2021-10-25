@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using Api.v1.Models;
+using Api.api.v1.Models;
 using DbUser = Context.Models.User;
 
 namespace Api.Infrastructure.Profiles
