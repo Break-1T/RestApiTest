@@ -13,9 +13,13 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Api;
 using Api.api.v1.Controllers;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Xunit;
 using Moq;
+using UserControllerV1 = Api.api.v1.Controllers.UserController;
+using UserControllerV2 = Api.api.v2.Controllers.UserController;
+using ApiUser = Api.api.v1.Models.User;
 
 namespace RestApi.Tests
 {
@@ -23,22 +27,33 @@ namespace RestApi.Tests
     {
         public UserControllerTests()
         {
-            _userControllerMock = new Mock<UserController>();
+            _userControllerV1Mock = new Mock<UserControllerV1>();
+            _userControllerV2Mock = new Mock<UserControllerV2>();
 
             _userServiceMock = new Mock<UserService>();
 
-            _userControllerloggerMock = new Mock<ILogger<UserController>>();
+            _userControllerV1loggerMock = new Mock<ILogger<UserControllerV1>>();
+            _userControllerV2loggerMock = new Mock<ILogger<UserControllerV2>>();
 
             _userServiceloggerMock = new Mock<ILogger<UserService>>();
 
+            _mapperMock = new Mock<IMapper>();
+
         }
         
-        private readonly Mock<ILogger<UserController>> _userControllerloggerMock;
+        private readonly Mock<ILogger<UserControllerV1>> _userControllerV1loggerMock;
+        private readonly Mock<ILogger<UserControllerV2>> _userControllerV2loggerMock;
+
+
         private readonly Mock<ILogger<UserService>> _userServiceloggerMock;
         private readonly Mock<UserService> _userServiceMock;
-        private readonly Mock<UserController> _userControllerMock;
 
-        private readonly IEnumerable<User> _usersList = new List<User>()
+        private readonly Mock<UserControllerV1> _userControllerV1Mock;
+        private readonly Mock<UserControllerV2> _userControllerV2Mock;
+
+        private readonly Mock<IMapper> _mapperMock;
+
+        private readonly IEnumerable<ApiUser> _usersList = new List<ApiUser>()
         {
             new() { Age = 19, CurrentTime = DateTime.Now, Id = 1, Name = "taras", Surname = "krupko" },
             new() { Age = 20, CurrentTime = DateTime.Now, Id = 2, Name = "ivan", Surname = "sidorov" },
@@ -46,37 +61,37 @@ namespace RestApi.Tests
             new() { Age = 22, CurrentTime = DateTime.Now, Id = 4, Name = "roman", Surname = "sochin" }
         };
 
-        private RestApiContext AppContext
-        {
-            get
-            {
-                var dbOptions = new DbContextOptionsBuilder<RestApiContext>().UseInMemoryDatabase($"DB: {Guid.NewGuid()}").Options;
-                var appContex = new RestApiContext(dbOptions);
+        //private RestApiContext AppContext
+        //{
+        //    get
+        //    {
+        //        var dbOptions = new DbContextOptionsBuilder<RestApiContext>().UseInMemoryDatabase($"DB: {Guid.NewGuid()}").Options;
+        //        var appContex = new RestApiContext(dbOptions);
 
-                appContex.Users.AddRange(_usersList);
-                appContex.SaveChanges();
-                return appContex;
+        //        appContex.Users.AddRange(_usersList);
+        //        appContex.SaveChanges();
+        //        return appContex;
 
-            }
-        }
+        //    }
+        //}
 
         //[Fact]
         //public async void GetAsync_NotEmpty_Test()
         //{
         //    //Arrange
-            
-        //    var userController = new UserController(_userControllerloggerMock.Object, _userServiceMock.Object);
+
+        //    var userController = new UserControllerV1(_userControllerV1loggerMock.Object, _userServiceMock.Object,_mapperMock.Object);
         //    _userServiceMock.Setup(service => service.GetUserAsync(It.IsAny<CancellationToken>()))
         //        .Returns(Task.FromResult(_usersList));
 
         //    //Act
 
-        //    var result = await userController.GetUsersAsync();
+        //    var result = await userController.GetUserAsync();
 
         //    //Assert
 
-        //    //Assert.Equal(result.ExecuteResultAsync().Status,HttpStatusCode.OK);
-        //    //Assert.Equal(_usersList.Count(), result.Count());
+        //    Assert.Equal(result.ExecuteResultAsync().Status, HttpStatusCode.OK);
+        //    Assert.Equal(_usersList.Count(), result.Count());
 
         //    _userControllerloggerMock.VerifyNoOtherCalls();
         //}
@@ -106,7 +121,7 @@ namespace RestApi.Tests
 
         //    var exception = new Exception("GetAsync_Exception_Test");
         //    _userServiceMock.Setup(userService => userService.GetUserAsync(It.IsAny<CancellationToken>())).Throws(exception);
-        //    var userController = new UserController(_userControllerloggerMock.Object,_userServiceMock.Object);
+        //    var userController = new UserController(_userControllerloggerMock.Object, _userServiceMock.Object);
 
         //    //Act
 
@@ -116,12 +131,12 @@ namespace RestApi.Tests
 
         //    Assert.Null(result);
 
-        //    _userControllerloggerMock.Verify(x=>x.Log(LogLevel.Error,
+        //    _userControllerloggerMock.Verify(x => x.Log(LogLevel.Error,
         //        It.IsAny<EventId>(),
         //        It.IsAny<It.IsAnyType>(),
         //        exception,
-        //        (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()),Times.Once);
-        //    _userServiceMock.Verify(x=>x.GetUserAsync(It.IsAny<CancellationToken>()),Times.Once);
+        //        (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()), Times.Once);
+        //    _userServiceMock.Verify(x => x.GetUserAsync(It.IsAny<CancellationToken>()), Times.Once);
 
 
         //    _userControllerloggerMock.VerifyNoOtherCalls();
@@ -145,10 +160,10 @@ namespace RestApi.Tests
         //    var result = await user.GetUserAsync(id);
 
         //    //Assert
-        //    if (id==999)
+        //    if (id == 999)
         //        Assert.Null(result);
         //    //else
-        //        //Assert.Equal(id,result.Id);
+        //    //Assert.Equal(id,result.Id);
         //}
     }
 }

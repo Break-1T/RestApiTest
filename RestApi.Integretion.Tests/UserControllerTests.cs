@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using Xunit;
 using Api;
 using Api.Infrastructure.Extensions;
-using Api.v1.Models;
+using Api.api.v1.Models;
 using Context.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
@@ -21,13 +21,13 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Text.Json;
 using System.Threading;
 using AutoMapper;
-using User = Api.v1.Models.User;
+using User = Api.api.v1.Models.User;
 
 namespace RestApi.Integration.Tests
 {
-    public class ApiEndpointTest : IClassFixture<TestWebApplicationFactory<Startup>>
+    public class UserControllerTests : IClassFixture<TestWebApplicationFactory<Startup>>
     {
-        public ApiEndpointTest(TestWebApplicationFactory<Startup> factory)
+        public UserControllerTests(TestWebApplicationFactory<Startup> factory)
         {
             _factory = factory;
             client = factory.CreateClient();
@@ -37,14 +37,14 @@ namespace RestApi.Integration.Tests
         private readonly HttpClient client;
 
         [Fact]
-        public async Task GetUsersAsync_usersList_return_test()
+        public async Task GetUsersAsync_UsersListReturn_Ok()
         {
             // Arrange
             
             
             // Act
             
-            var response = await client.GetAsync("User/list");
+            var response = await client.GetAsync("/api/v2/User/list");
 
             var userApiModels = await response.Content.ReadFromJsonAsync<List<User>>();
 
@@ -57,7 +57,7 @@ namespace RestApi.Integration.Tests
             Assert.NotEmpty(userApiModels);
         }
         [Fact]
-        public async Task GetUsersAsync_error_endpoint_return_Test()
+        public async Task GetUsersAsync_Navigation_NotFound()
         {
             // Arrange
             
@@ -78,25 +78,21 @@ namespace RestApi.Integration.Tests
 
             // Assert
 
-            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
             Assert.Null(userApiModels);
             
         }
 
 
-        [Theory]
-        [InlineData(2)]
-        [InlineData(3)]
-        [InlineData(4)]
-        [InlineData(9)]
-        public async Task GetUserAsync_user_return_test(int id)
+        [Fact]
+        public async Task GetUserAsync_UserReturn_Ok()
         {
             // Arrange
             
 
             // Act
 
-            var response = await client.GetAsync($"User/{id}");
+            var response = await client.GetAsync($"/api/v2/User/9");
             var user = await response.Content.ReadFromJsonAsync<User>();
 
             // Assert
@@ -105,17 +101,22 @@ namespace RestApi.Integration.Tests
             
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.NotNull(user);
-            Assert.Equal(id,user.Id);
+            Assert.Equal(9,user.Id);
+            Assert.Equal("user", user.Name);
+            Assert.Equal("user", user.Surname);
+            Assert.Equal(3, user.Age);
+            Assert.Equal(null, user.Operations);
+
         }
         [Fact]
-        public async Task GetUserAsync_inaccessibleId_badRequest_Test()
+        public async Task GetUserAsync_InvalidId_ReturnBadRequest()
         {
             // Arrange
             
 
             // Act
 
-            var response = await client.GetAsync($"User/{999999}");
+            var response = await client.GetAsync($"api/v2/User/{999999}");
             User user;
             try
             {
@@ -133,11 +134,11 @@ namespace RestApi.Integration.Tests
         }
 
         [Fact]
-        public async Task CreateUserAsync_httpRequestMessage_Test()
+        public async Task CreateUserAsync_SuccessCreated_ReturnOk()
         {
             // Arrange
             
-            var httpRequest = new HttpRequestMessage(System.Net.Http.HttpMethod.Post, "User/create");
+            var httpRequest = new HttpRequestMessage(System.Net.Http.HttpMethod.Post, "api/v1/User/create");
             var userApi = new User()
             {
                 Name = "One",
@@ -157,10 +158,18 @@ namespace RestApi.Integration.Tests
 
             response.EnsureSuccessStatusCode(); //200-299
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+
+            var user = await response.Content.ReadFromJsonAsync<User>();
+
+            Assert.Equal(userApi.Name, user?.Name);
+            Assert.Equal(userApi.Surname, user?.Surname);
+            Assert.Equal(userApi.Age, user?.Age);
+            Assert.Equal(userApi.CurrentTime, user?.CurrentTime);
+            Assert.Equal(userApi.Operations, user?.Operations);
         }
-        
+
         [Fact]
-        public async Task CreateUserAsync_Exception_userAge_limit_400_Test()
+        public async Task CreateUserAsync_Exception_userAge()
         {
             // Arrange
             var userApi = new User
@@ -174,7 +183,7 @@ namespace RestApi.Integration.Tests
             
             string jsonUser = JsonSerializer.Serialize(userApi);
 
-            var httpRequest = new HttpRequestMessage(System.Net.Http.HttpMethod.Post, "User/create");
+            var httpRequest = new HttpRequestMessage(System.Net.Http.HttpMethod.Post, "api/v1/User/create");
             httpRequest.Content = new StringContent(jsonUser, Encoding.UTF8, "application/json");
 
             // Act
@@ -184,6 +193,9 @@ namespace RestApi.Integration.Tests
             // Assert
 
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+            var s = await response.Content.ReadAsStringAsync();
+
         }
     }
 }

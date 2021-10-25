@@ -16,8 +16,8 @@ namespace Api.api.v1.Models
         public string Name { get; set; }
         [Required(ErrorMessage = "Please enter the user's surname.")]
         public string Surname { get; set; }
-
-        [IntegerValidator(MinValue = 10,MaxValue = 120,ExcludeRange = true)]
+        
+        [IntegerValidator(MaxValue = 100,MinValue = 10, ExcludeRange = true)]
         public int Age { get; set; }
         
         public DateTime CurrentTime { get; set; }

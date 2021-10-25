@@ -59,6 +59,8 @@ namespace Api
                         contextOptionsBuilder => contextOptionsBuilder
                             .MigrationsAssembly("Migrations")));
 
+            //services.AddSwaggerGen();
+
             services.AddSwaggerGen(option =>
             {
                 option.SwaggerDoc("v2", new OpenApiInfo()
