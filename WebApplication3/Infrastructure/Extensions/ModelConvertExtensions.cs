@@ -10,7 +10,6 @@ using Context.Models;
 using System.Text.Json;
 using AutoMapper;
 using Operation = Api.api.v1.Models.Operation;
-using User = Api.api.v1.Models.User;
 
 namespace Api.Infrastructure.Extensions
 {
@@ -20,27 +19,27 @@ namespace Api.Infrastructure.Extensions
         /// Converts to userapimodel.
         /// </summary>
         /// <param name="user">The userList.</param>
-        /// <returns>User</returns>
-        public static User ToUserApiModel(this Context.Models.User user,IMapper mapper)
+        /// <returns>UserResponse</returns>
+        public static UserResponse ToUserApiModel(this Context.Models.User user,IMapper mapper)
         {
-            var result = user == null ? null : mapper.Map<User>(user);
+            var result = user == null ? null : mapper.Map<UserResponse>(user);
             return result;
         }
         /// <summary>
         /// Converts to userList.
         /// </summary>
-        /// <param name="user">The userList.</param>
-        /// <returns>User</returns>
-        public static Context.Models.User ToUser(this User user)
+        /// <param name="userResponse">The userList.</param>
+        /// <returns>UserResponse</returns>
+        public static Context.Models.User ToUser(this UserResponse userResponse)
         {
-           var result = user == null ? null :new Context.Models.User()
+           var result = userResponse == null ? null :new Context.Models.User()
             {
-                Age = user.Age,
-                CurrentTime = user.CurrentTime,
-                Id = user.Id,
-                Name = user.Name,
-                //Operations = user.Operations,
-                Surname = user.Surname
+                Age = userResponse.Age,
+                CurrentTime = userResponse.CurrentTime,
+                Id = userResponse.Id,
+                Name = userResponse.Name,
+                //Operations = userResponse.Operations,
+                Surname = userResponse.Surname
             };
            return result;
         }
@@ -48,22 +47,22 @@ namespace Api.Infrastructure.Extensions
         /// <summary>
         /// Converts to userlistapimodel.
         /// </summary>
-        /// <param name="userList">The user list.</param>
+        /// <param name="userList">The userResponse list.</param>
         /// <returns></returns>
-        public static IEnumerable<User> ToUserListApiModel(this IEnumerable<Context.Models.User> userList)
+        public static IEnumerable<UserResponse> ToUserListApiModel(this IEnumerable<Context.Models.User> userList)
         {
-            var list = new List<User>();
-            //foreach (var user in userList)
-                //list.Add(user.ToUserApiModel());
+            var list = new List<UserResponse>();
+            //foreach (var userResponse in userList)
+                //list.Add(userResponse.ToUserApiModel());
             return list;
         }
 
         /// <summary>
         /// Converts to userlist.
         /// </summary>
-        /// <param name="userList">The user list.</param>
+        /// <param name="userList">The userResponse list.</param>
         /// <returns></returns>
-        public static IEnumerable<Context.Models.User> ToUserList(this IEnumerable<User> userList)
+        public static IEnumerable<Context.Models.User> ToUserList(this IEnumerable<UserResponse> userList)
         {
             var list = new List<Context.Models.User>();
             foreach (var userApiModel in userList)
@@ -71,9 +70,9 @@ namespace Api.Infrastructure.Extensions
             return list;
         }
 
-        public static string ToStringJson(this User model) => JsonSerializer.Serialize(model);
+        public static string ToStringJson(this UserResponse model) => JsonSerializer.Serialize(model);
 
-        public static User ToUserApiModel(this string str) => JsonSerializer.Deserialize<User>(str);
+        public static UserResponse ToUserApiModel(this string str) => JsonSerializer.Deserialize<UserResponse>(str);
 
 
         /// <summary>
@@ -88,7 +87,7 @@ namespace Api.Infrastructure.Extensions
                 Id = operation.Id,
                 Name = operation.Name,
                 DateTime=operation.DateTime,
-                //User=operation.User
+                //UserResponse=operation.UserResponse
             };
         }
     }

@@ -30,13 +30,13 @@ namespace Api.api.v2.Controllers
         private readonly IMapper _mapper;
 
         [HttpGet("list")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<User>))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<UserResponse>))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public virtual async Task<ActionResult<List<User>>> GetUsersAsync()
+        public virtual async Task<ActionResult<List<UserResponse>>> GetUsersAsync()
         {
             var contextUser = await _service.GetUserAsync(token);
 
-            var apiUser = _mapper.Map<IEnumerable<User>>(contextUser);
+            var apiUser = _mapper.Map<IEnumerable<UserResponse>>(contextUser);
             if (apiUser == null)
             {
                 _logger.LogWarning("DbException");
@@ -47,13 +47,13 @@ namespace Api.api.v2.Controllers
         }
 
         [HttpGet("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(User))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserResponse))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public virtual async Task<ActionResult<User>> GetUserAsync(int id)
+        public virtual async Task<ActionResult<UserResponse>> GetUserAsync(int id)
         {
             var contextUser = await _service.GetUserAsync(id, token);
 
-            var apiUser = _mapper.Map<User>(contextUser);
+            var apiUser = _mapper.Map<UserResponse>(contextUser);
             if (apiUser == null)
             {
                 _logger.LogWarning("DbException");

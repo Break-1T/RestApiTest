@@ -13,13 +13,13 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Api;
 using Api.api.v1.Controllers;
+using Api.api.v1.Models;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Xunit;
 using Moq;
 using UserControllerV1 = Api.api.v1.Controllers.UserController;
 using UserControllerV2 = Api.api.v2.Controllers.UserController;
-using ApiUser = Api.api.v1.Models.User;
 
 namespace RestApi.Tests
 {
@@ -53,7 +53,7 @@ namespace RestApi.Tests
 
         private readonly Mock<IMapper> _mapperMock;
 
-        private readonly IEnumerable<ApiUser> _usersList = new List<ApiUser>()
+        private readonly IEnumerable<UserResponse> _usersList = new List<UserResponse>()
         {
             new() { Age = 19, CurrentTime = DateTime.Now, Id = 1, Name = "taras", Surname = "krupko" },
             new() { Age = 20, CurrentTime = DateTime.Now, Id = 2, Name = "ivan", Surname = "sidorov" },
@@ -153,11 +153,11 @@ namespace RestApi.Tests
         //{
         //    //Arrange
 
-        //    var user = new UserController(_userControllerloggerMock.Object,
+        //    var userResponse = new UserController(_userControllerloggerMock.Object,
         //        new UserService(AppContext, _userServiceloggerMock.Object));
         //    //Act
 
-        //    var result = await user.GetUserAsync(id);
+        //    var result = await userResponse.GetUserAsync(id);
 
         //    //Assert
         //    if (id == 999)

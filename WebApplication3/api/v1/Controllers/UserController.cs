@@ -42,6 +42,7 @@ namespace Api.api.v1.Controllers
             {
                 _logger.LogWarning("DbException");
                 return this.BadRequest("DbException");
+                
             }
             return this.Ok(result);
         }
@@ -49,9 +50,9 @@ namespace Api.api.v1.Controllers
         [HttpPost("create")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(bool))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public virtual async Task<IActionResult> CreateUserAsync([FromBody] User user)
+        public virtual async Task<IActionResult> CreateUserAsync([FromBody] UserResponse userResponse)
         {
-            var contextUser = _mapper.Map<DbUser>(user);
+            var contextUser = _mapper.Map<DbUser>(userResponse);
 
             var result = await _service.AddUserAsync(contextUser, token);
 
@@ -60,7 +61,7 @@ namespace Api.api.v1.Controllers
                 _logger.LogWarning("DbException");
                 return this.BadRequest("DbException");
             }
-            return this.CreatedAtAction("CreateUser", new { id = user.Id }, user);
+            return this.CreatedAtAction("CreateUser", new { id = userResponse.Id }, userResponse);
             
         }
     }

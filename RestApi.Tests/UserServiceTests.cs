@@ -76,7 +76,7 @@ namespace RestApi.Tests
             // Arrange
             
             var excep = new Exception("Get_users_Exception_test");
-            //var intDbSet = new Mock<InternalDbSet<User>>();
+            //var intDbSet = new Mock<InternalDbSet<UserResponse>>();
             _dbContextMock.Setup(db => db.Users)
                 .Throws(excep);
             //_dbContextMock.Setup(db => db.Users).Returns(intDbSet.Object);

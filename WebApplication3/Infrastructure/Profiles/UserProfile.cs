@@ -14,8 +14,8 @@ namespace Api.Infrastructure.Profiles
         {
             AllowNullCollections = true;
 
-            CreateMap<DbUser, User>();
-            CreateMap<User, DbUser>();
+            CreateMap<DbUser, UserResponse>();
+            CreateMap<UserResponse, DbUser>();
         }
     }
 }

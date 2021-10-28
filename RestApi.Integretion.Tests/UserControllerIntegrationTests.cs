@@ -21,13 +21,12 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Text.Json;
 using System.Threading;
 using AutoMapper;
-using User = Api.api.v1.Models.User;
 
 namespace RestApi.Integration.Tests
 {
-    public class UserControllerTests : IClassFixture<TestWebApplicationFactory<Startup>>
+    public class UserControllerIntegrationTests : IClassFixture<TestWebApplicationFactory<Startup>>
     {
-        public UserControllerTests(TestWebApplicationFactory<Startup> factory)
+        public UserControllerIntegrationTests(TestWebApplicationFactory<Startup> factory)
         {
             _factory = factory;
             client = factory.CreateClient();
@@ -37,7 +36,7 @@ namespace RestApi.Integration.Tests
         private readonly HttpClient client;
 
         [Fact]
-        public async Task GetUsersAsync_UsersListReturn_Ok()
+        public async Task GetUsersAsync_UsersList_ReturnOk()
         {
             // Arrange
             
@@ -46,7 +45,7 @@ namespace RestApi.Integration.Tests
             
             var response = await client.GetAsync("/api/v2/User/list");
 
-            var userApiModels = await response.Content.ReadFromJsonAsync<List<User>>();
+            var userApiModels = await response.Content.ReadFromJsonAsync<List<UserResponse>>();
 
             // Assert
 
@@ -57,7 +56,7 @@ namespace RestApi.Integration.Tests
             Assert.NotEmpty(userApiModels);
         }
         [Fact]
-        public async Task GetUsersAsync_Navigation_NotFound()
+        public async Task GetUsersAsync_IncorrectEndpoint_NotFound()
         {
             // Arrange
             
@@ -66,10 +65,10 @@ namespace RestApi.Integration.Tests
 
             var response = await client.GetAsync("User/error");
             
-            List<User> userApiModels;
+            List<UserResponse> userApiModels;
             try
             {
-                userApiModels = await response.Content.ReadFromJsonAsync<List<User>>();
+                userApiModels = await response.Content.ReadFromJsonAsync<List<UserResponse>>();
             }
             catch
             {
@@ -93,7 +92,7 @@ namespace RestApi.Integration.Tests
             // Act
 
             var response = await client.GetAsync($"/api/v2/User/9");
-            var user = await response.Content.ReadFromJsonAsync<User>();
+            var user = await response.Content.ReadFromJsonAsync<UserResponse>();
 
             // Assert
 
@@ -102,8 +101,8 @@ namespace RestApi.Integration.Tests
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.NotNull(user);
             Assert.Equal(9,user.Id);
-            Assert.Equal("user", user.Name);
-            Assert.Equal("user", user.Surname);
+            Assert.Equal("userResponse", user.Name);
+            Assert.Equal("userResponse", user.Surname);
             Assert.Equal(3, user.Age);
             Assert.Equal(null, user.Operations);
 
@@ -117,20 +116,20 @@ namespace RestApi.Integration.Tests
             // Act
 
             var response = await client.GetAsync($"api/v2/User/{999999}");
-            User user;
+            UserResponse userResponse;
             try
             {
-                user = await response.Content.ReadFromJsonAsync<User>();
+                userResponse = await response.Content.ReadFromJsonAsync<UserResponse>();
             }
             catch
             {
-                user = null;
+                userResponse = null;
             }
 
             // Assert
 
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-            Assert.Null(user);
+            Assert.Null(userResponse);
         }
 
         [Fact]
@@ -139,7 +138,7 @@ namespace RestApi.Integration.Tests
             // Arrange
             
             var httpRequest = new HttpRequestMessage(System.Net.Http.HttpMethod.Post, "api/v1/User/create");
-            var userApi = new User()
+            var userApi = new UserResponse()
             {
                 Name = "One",
                 Surname = "Two",
@@ -159,7 +158,7 @@ namespace RestApi.Integration.Tests
             response.EnsureSuccessStatusCode(); //200-299
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
 
-            var user = await response.Content.ReadFromJsonAsync<User>();
+            var user = await response.Content.ReadFromJsonAsync<UserResponse>();
 
             Assert.Equal(userApi.Name, user?.Name);
             Assert.Equal(userApi.Surname, user?.Surname);
@@ -172,7 +171,7 @@ namespace RestApi.Integration.Tests
         public async Task CreateUserAsync_Exception_userAge()
         {
             // Arrange
-            var userApi = new User
+            var userApi = new UserResponse
             {
                 Name = "One",
                 Surname = "Two",
