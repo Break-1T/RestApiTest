@@ -25,7 +25,6 @@ namespace Context
                 entity.Property(user => user.Surname).IsRequired();
                 entity.Property(user => user.Age);
                 entity.Property(user => user.CurrentTime);
-
                 //Сделать не каскадное удаление
                 entity.HasMany(user => user.Operations)
                     .WithOne(operation => operation.User).OnDelete(DeleteBehavior.ClientSetNull);

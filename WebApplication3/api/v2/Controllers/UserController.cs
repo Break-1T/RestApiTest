@@ -8,12 +8,13 @@ using AutoMapper;
 using Context.Infrastructure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-
+using Microsoft.AspNetCore.Authorization;
 
 namespace Api.api.v2.Controllers
 {
     [ApiController]
     [V2,ApiRoute]
+    //[Authorize]
     public class UserController : Controller
     {
         public UserController(ILogger<UserController> logger, IUserService service, IMapper mapper)
@@ -29,6 +30,7 @@ namespace Api.api.v2.Controllers
         private readonly CancellationToken token;
         private readonly IMapper _mapper;
 
+        [Authorize]
         [HttpGet("list")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<UserResponse>))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

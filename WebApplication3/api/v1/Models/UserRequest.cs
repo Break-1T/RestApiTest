@@ -26,5 +26,6 @@ namespace Api.api.v1.Models
 
         public DateTime CurrentTime { get; set; }
         public List<Operation> Operations { get; set; }
+        public string Somevalue { get; set; }
     }
 }

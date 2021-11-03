@@ -1,39 +1,34 @@
-﻿//using Microsoft.AspNetCore.Mvc;
-//using System;
-//using System.Collections.Generic;
-//using System.Diagnostics;
-//using System.Linq;
-//using System.Net;
-//using System.Threading.Tasks;
-//using Microsoft.AspNetCore.Diagnostics;
-//using Microsoft.Extensions.Logging;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Authorization;
 
-//namespace Api.Controllers
-//{
-//    [Controller]
-//    [Route("[controller]")]
-//    public class HomeController : ControllerBase
-//    {
-//        public HomeController(ILogger<HomeController> _logger)
-//        {
-//            this._logger = _logger;
-//        }
-        
-//        private readonly ILogger _logger;
+namespace Api.Controllers
+{
+    [Controller]
+    public class HomeController : Controller
+    {
+        [Authorize]
+        public IActionResult Index()
+        {
+            return View();
+        }
 
-//        // <summary>
-//        /// Error action.
-//        /// </summary>
-//        [Route("error")]
-//        public IActionResult Error()
-//        {
-//            var reExecute = this.HttpContext.Features.Get<IStatusCodeReExecuteFeature>();
-//            var message =
-//                $"Unexpected Status Code: {this.HttpContext.Response?.StatusCode}, OriginalPath: {reExecute?.OriginalPath}";
-//            this._logger.LogInformation(message);
-//            return new ObjectResult(new
-//            { RequestId = Activity.Current?.Id ?? this.HttpContext.TraceIdentifier })
-//            { StatusCode = (int)HttpStatusCode.BadRequest };
-//        }
-//    }
-//}
+        public IActionResult Privacy()
+        {
+            return View();
+        }
+
+        //[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        //public IActionResult Error()
+        //{
+        //    return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        //}
+    }
+}

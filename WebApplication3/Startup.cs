@@ -23,6 +23,8 @@ using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Swashbuckle.AspNetCore.SwaggerUI;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace Api
 {
@@ -38,6 +40,17 @@ namespace Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<CookiePolicyOptions>(options =>
+            {
+                // This lambda determines whether user consent for non-essential cookies is needed for a given request.
+                options.CheckConsentNeeded = context => true;
+                options.MinimumSameSitePolicy = SameSiteMode.None;
+            });
+
+            services.AddControllersWithViews();
+
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+
             services.AddControllers();
             //services.AddVersionedApiExplorer(opt => opt.GroupNameFormat = "'v'VVV");
             services.AddApiVersioning(o => { o.ReportApiVersions = true; })
@@ -60,6 +73,42 @@ namespace Api
                             .MigrationsAssembly("Migrations")));
 
             //services.AddSwaggerGen();
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultScheme = "Cookies";
+                options.DefaultChallengeScheme = "oidc";
+            })
+             .AddCookie("Cookies")
+             .AddOpenIdConnect("oidc", options =>
+             {
+                 options.SignInScheme = "Cookies";
+                 options.Authority = "https://localhost:5000";
+                 options.RequireHttpsMetadata = true;
+
+                 options.ClientId = "webclient";
+                 options.ClientSecret = "49C1A7E1-0C79-4A89-A3D6-A37998FB86B0";
+                 options.ResponseType = "code id_token";
+
+                 options.SaveTokens = true;
+                 options.GetClaimsFromUserInfoEndpoint = true;
+
+                 options.Scope.Add("test.api");
+                 options.Scope.Add("identity.api");
+                 options.Scope.Add("offline_access");
+             });
+
+            // services.AddAuthentication("Bearer")
+            //.AddJwtBearer("Bearer", options =>
+            //{
+            //    options.Authority = "https://localhost:44336";
+
+            //    options.TokenValidationParameters = new TokenValidationParameters
+            //    {
+            //        ValidateAudience = false
+            //    };
+
+            //});
 
             services.AddSwaggerGen(option =>
             {
@@ -102,16 +151,22 @@ namespace Api
             {
                 app.UseExceptionHandler("/home/error");
             }
-
             app.UseHttpsRedirection();
 
+            //The authentication middleware should be added before the MVC in the pipeline.
+            app.UseAuthentication();
+
+            app.UseStaticFiles();
+            app.UseCookiePolicy();
+
+            // Added after upgrading to .NET Core 3.1
             app.UseRouting();
-
             app.UseAuthorization();
-
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
             });
         }
     }

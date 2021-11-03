@@ -10,12 +10,13 @@ using Context.Infrastructure;
 using Microsoft.AspNetCore.Http;
 using DbUser = Context.Models.User;
 using System.Reflection;
-
+using Microsoft.AspNetCore.Authorization;
 
 namespace Api.api.v1.Controllers
 {
     [ApiController]
     [V1,ApiRoute]
+    [Authorize]
     public class UserController : ControllerBase
     {
         //public UserController() { }
