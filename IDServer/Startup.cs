@@ -1,11 +1,11 @@
 using Context;
 using Context.Models;
-using IDServer.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
@@ -18,26 +18,34 @@ namespace IDServer
 {
     public class Startup
     {
+        public Startup(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
+
+        public IConfiguration Configuration { get; }
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<RestApiContext>(options =>
+                options.UseNpgsql(Configuration.GetConnectionString("DatabaseConnection")));
             // Block 1: Add ASP.NET Identity
-            //services.AddIdentity<User, IdentityRole>()
-            //    .AddEntityFrameworkStores<RestApiContext>()
-            //    .AddDefaultTokenProviders();
+            services.AddIdentity<ApplicationUser, IdentityRole>()
+                .AddEntityFrameworkStores<RestApiContext>()
+                .AddDefaultTokenProviders();
 
             //services.AddMvc().SetCompatibilityVersion(Microsoft.AspNetCore.Mvc.CompatibilityVersion.Version_2_1);
             services.AddControllersWithViews();
 
-            services.Configure<IISOptions>(iis =>
-            {
-                iis.AuthenticationDisplayName = "Windows";
-                iis.AutomaticAuthentication = false;
-            });
+            //services.Configure<IISOptions>(iis =>
+            //{
+            //    iis.AuthenticationDisplayName = "Windows";
+            //    iis.AutomaticAuthentication = false;
+            //});
 
             // Block 2: Add IdentityServer4 with InMemory Configuration
-            var builder = services.AddIdentityServer(options =>
+            services.AddIdentityServer(options =>
             {
                 options.Events.RaiseErrorEvents = true;
                 options.Events.RaiseInformationEvents = true;
@@ -47,8 +55,9 @@ namespace IDServer
                 .AddInMemoryIdentityResources(Config.GetIdentityResources())
                 .AddInMemoryApiResources(Config.GetApis())
                 .AddInMemoryClients(Config.GetClients())
-                .AddAspNetIdentity<ApplicationUser>()
-                .AddDeveloperSigningCredential();
+                .AddInMemoryApiScopes(Config.GetApiScopes())
+                .AddDeveloperSigningCredential()
+                .AddAspNetIdentity<ApplicationUser>();
 
             services.AddAuthentication();
         }

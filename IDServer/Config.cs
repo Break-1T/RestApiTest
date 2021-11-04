@@ -17,7 +17,7 @@ namespace IDServer
             return new IdentityResource[]
             {
                 new IdentityResources.OpenId(),
-                new IdentityResources.Profile(),
+                new IdentityResources.Profile()
                 // You may add other identity resources like address,phone... etc
                 //new IdentityResources.Address()
             };
@@ -28,8 +28,16 @@ namespace IDServer
         {
             return new ApiResource[]
             {
-                new ApiResource("identity.api", "Identity API"),
-                new ApiResource("test.api","Test API")
+                new ApiResource("User", "UserV1"),
+            };
+        }
+        public static IEnumerable<ApiScope> GetApiScopes()
+        {
+            return new List<ApiScope>
+            {
+                new ApiScope(name: "User",   displayName: "UserV1"),
+                new ApiScope(name: "write",  displayName: "Write your data."),
+                new ApiScope(name: "delete", displayName: "Delete your data.")
             };
         }
 
@@ -38,21 +46,41 @@ namespace IDServer
             return new[]
             {
                 //Block 2:  MVC client using hybrid flow
+                //new Client
+                //{
+                //    ClientId = "webclient",
+                //    ClientName = "Web Client",
+                //    RequireConsent = false,
+                //    AllowedGrantTypes = GrantTypes.ClientCredentials,
+                //    RequireClientSecret = false,
+
+                //    RedirectUris = { "https://localhost:44373/api/v2/User/list","https://localhost:44373/api/v2/User/","https://localhost:44373/api/v1/User/create","https://localhost:44373/api/v1/User/delete" },
+                //    //FrontChannelLogoutUri = "https://localhost:44373/error",
+                //    //PostLogoutRedirectUris = { "https://localhost:44373/error" },
+                //    AllowAccessTokensViaBrowser=true,
+                //    AllowOfflineAccess = true,
+                //    AllowedScopes = {
+                //        IdentityServerConstants.StandardScopes.OpenId,
+                //        IdentityServerConstants.StandardScopes.Profile,
+                //    }                
+                //},
                 new Client
                 {
-                    ClientId = "webclient",
-                    ClientName = "Web Client",
-                    RequireConsent = false,
-                    AllowedGrantTypes = GrantTypes.HybridAndClientCredentials,
-                    ClientSecrets = { new Secret("49C1A7E1-0C79-4A89-A3D6-A37998FB86B0".Sha256()) },
+                    ClientId = "client",
+                    ClientName = "Client1",
+                    ClientSecrets = { new Secret(("secret").Sha256()) },
 
-                    RedirectUris = { "https://localhost:44373/signin-oidc" },
-                    FrontChannelLogoutUri = "https://localhost:44373/signout-oidc",
-                    PostLogoutRedirectUris = { "https://localhost:44373/signout-callback-oidc" },
-
-                    AllowOfflineAccess = true,
-                    AllowedScopes = { "openid", "profile", "identity.api","test.api" }
+                    AllowedGrantTypes = GrantTypes.ClientCredentials,
+                    AllowedScopes = { "userApi1" }
                 },
+                    new Client
+                    {
+                         ClientName = "Client Application2",
+                         ClientId = "3X=nNv?Sgu$S",
+                         AllowedGrantTypes = GrantTypes.ClientCredentials,
+                         ClientSecrets = { new Secret("1554db43-3015-47a8-a748-55bd76b6af48".Sha256()) },
+                         AllowedScopes = { "User" }
+                    }
 
                 //Block 3: SPA client using Code flow
                 //new Client

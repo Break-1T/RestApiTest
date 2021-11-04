@@ -14,7 +14,7 @@ namespace Api.api.v2.Controllers
 {
     [ApiController]
     [V2,ApiRoute]
-    //[Authorize]
+    [Authorize]
     public class UserController : Controller
     {
         public UserController(ILogger<UserController> logger, IUserService service, IMapper mapper)
@@ -48,6 +48,7 @@ namespace Api.api.v2.Controllers
             return this.Ok(apiUser);
         }
 
+        [Authorize]
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserResponse))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

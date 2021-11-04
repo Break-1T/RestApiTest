@@ -25,6 +25,8 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using IdentityServer4;
+using IdentityServer4.Models;
 
 namespace Api
 {
@@ -60,8 +62,6 @@ namespace Api
                 options.SubstituteApiVersionInUrl = true;
             });
 
-
-
             services.AddAutoMapper(typeof(Startup));
 
             services.AddTransient<IUserService, UserService>();
@@ -74,41 +74,32 @@ namespace Api
 
             //services.AddSwaggerGen();
 
-            services.AddAuthentication(options =>
-            {
-                options.DefaultScheme = "Cookies";
-                options.DefaultChallengeScheme = "oidc";
-            })
-             .AddCookie("Cookies")
-             .AddOpenIdConnect("oidc", options =>
-             {
-                 options.SignInScheme = "Cookies";
-                 options.Authority = "https://localhost:5000";
-                 options.RequireHttpsMetadata = true;
+            services.AddAuthentication("Bearer")
+           .AddJwtBearer("Bearer", options =>
+           {
+               options.Authority = "https://localhost:44336";
 
-                 options.ClientId = "webclient";
-                 options.ClientSecret = "49C1A7E1-0C79-4A89-A3D6-A37998FB86B0";
-                 options.ResponseType = "code id_token";
+               options.TokenValidationParameters = new TokenValidationParameters
+               {
+                   ValidateAudience = false
+               };
 
-                 options.SaveTokens = true;
-                 options.GetClaimsFromUserInfoEndpoint = true;
+           });
+           //.AddOpenIdConnect("oidc", options =>
+           //{
+           //    options.SignInScheme = "Cookies";
+           //    options.Authority = "https://localhost:44336";
+           //    options.RequireHttpsMetadata = true;
 
-                 options.Scope.Add("test.api");
-                 options.Scope.Add("identity.api");
-                 options.Scope.Add("offline_access");
-             });
+           //    options.ClientId = "client";
+           //    options.ClientSecret = "secret";
+           //    options.ResponseType = "code id_token";
 
-            // services.AddAuthentication("Bearer")
-            //.AddJwtBearer("Bearer", options =>
-            //{
-            //    options.Authority = "https://localhost:44336";
+           //    options.SaveTokens = true;
+           //    options.GetClaimsFromUserInfoEndpoint = true;
 
-            //    options.TokenValidationParameters = new TokenValidationParameters
-            //    {
-            //        ValidateAudience = false
-            //    };
-
-            //});
+           //    options.Scope.Add("user.api");
+           //});
 
             services.AddSwaggerGen(option =>
             {

@@ -11,12 +11,12 @@ using Microsoft.AspNetCore.Http;
 using DbUser = Context.Models.User;
 using System.Reflection;
 using Microsoft.AspNetCore.Authorization;
+using Context.Models;
 
 namespace Api.api.v1.Controllers
 {
     [ApiController]
     [V1,ApiRoute]
-    [Authorize]
     public class UserController : ControllerBase
     {
         //public UserController() { }
@@ -32,7 +32,8 @@ namespace Api.api.v1.Controllers
         private readonly IUserService _service;
         private readonly CancellationToken token;
         private readonly IMapper _mapper;
-
+        
+        [Authorize]
         [HttpDelete("delete/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(bool))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -50,6 +51,7 @@ namespace Api.api.v1.Controllers
 
         [HttpPost("create")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(bool))]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public virtual async Task<IActionResult> CreateUserAsync([FromBody] UserResponse userResponse)
         {
@@ -63,7 +65,17 @@ namespace Api.api.v1.Controllers
                 return this.BadRequest("DbException");
             }
             return this.CreatedAtAction("CreateUser", new { id = userResponse.Id }, userResponse);
-            
         }
+
+        //[HttpPost("authenticate")]
+        //public IActionResult Authenticate(ApplicationUser model)
+        //{
+        //    var response = _userService.Authenticate(model);
+
+        //    if (response == null)
+        //        return BadRequest(new { message = "Username or password is incorrect" });
+
+        //    return Ok(response);
+        //}
     }
 }
