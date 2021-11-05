@@ -48,7 +48,7 @@ namespace Api
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
-            services.AddIdentityServer();
+            //services.AddIdentityServer();
 
             services.AddControllersWithViews();
 

@@ -35,6 +35,9 @@ namespace IDServer
                 .AddEntityFrameworkStores<RestApiContext>()
                 .AddDefaultTokenProviders();
 
+            services.AddAutoMapper(typeof(Startup));
+
+
             //services.AddMvc().SetCompatibilityVersion(Microsoft.AspNetCore.Mvc.CompatibilityVersion.Version_2_1);
             services.AddControllersWithViews();
 

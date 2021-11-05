@@ -75,15 +75,14 @@ namespace IDServer
                 },
                     new Client
                     {
-                         ClientName = "Client Application2",
-                         ClientId = "3X=nNv?Sgu$S",
-                         AllowedGrantTypes = GrantTypes.ClientCredentials,
-                         ClientSecrets = { new Secret("1554db43-3015-47a8-a748-55bd76b6af48".Sha256()) },
-                         AllowedScopes = { "User" }
+                         ClientName = "Api",
+                         ClientId = "MyClient",
+                         AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
+                         RequireClientSecret = false,
+                         AllowedScopes = { "User" },
                     },
                     new Client
                     {
-                        AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
                     }
 
                 //Block 3: SPA client using Code flow
