@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace IDServer.Models
 {
-    public class AuthenticateRequest:IdentityUser
+    public class AuthenticateRequest
     {
         [Required]
         public string Username { get; set; }

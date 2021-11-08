@@ -54,6 +54,8 @@ namespace Context
                 entry.Property(prop => prop.Password);
 
             });
+
+            InitDefaultData.Init(modelBuilder);
         }
     }
 }

@@ -23,7 +23,6 @@ namespace IDServer.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IMapper _mapper;
 
-
         /// <summary>
         /// Initializes a new instance of the <see cref="ApplicationUserController"/> class.
         /// </summary>
@@ -43,9 +42,7 @@ namespace IDServer.Controllers
         /// or
         /// tokenService
         /// </exception>
-        public ApplicationUserController(
-            UserManager<ApplicationUser> userManager,
-            IMapper mapper)
+        public ApplicationUserController(UserManager<ApplicationUser> userManager, IMapper mapper)
         {
             this._userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
             this._mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
@@ -58,13 +55,27 @@ namespace IDServer.Controllers
         /// <returns>Action result.</returns>
         [HttpPost]
         [Route("create")]
-        public async Task<IActionResult> CreateUser([FromBody] ApplicationUser user, CancellationToken cancellationToken=default)
+        public async Task<IActionResult> CreateUser([FromBody] AuthenticateRequest user, CancellationToken cancellationToken=default)
         {
             try
             {
-                var createUserResult = await this._userManager.CreateAsync(user, user.Password);
+                var random = new Random().Next(0, 99999);
+                var idenityUser = new ApplicationUser()
+                {
+                    Id = random.ToString(),
+                    UserName = user.Username,
+                    NormalizedUserName = new UpperInvariantLookupNormalizer().NormalizeName(user.Username),
+                    Password = user.Password,
+                    PasswordHash = new PasswordHasher<IdentityUser>().HashPassword(null, user.Password),
+                    EmailConfirmed = true,
+                    Email = "email",
+                    NormalizedEmail = "EMAIL",
+                    ConcurrencyStamp = " ",
+                    SecurityStamp = " ",
+                };
+                var createUserResult = await this._userManager.CreateAsync(idenityUser);
 
-                return this.Ok(user);
+                return this.Ok(idenityUser);
             }
             catch (Exception ex)
             {

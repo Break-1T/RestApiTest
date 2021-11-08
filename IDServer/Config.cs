@@ -77,9 +77,10 @@ namespace IDServer
                     {
                          ClientName = "Api",
                          ClientId = "MyClient",
+                         ClientSecrets = { new Secret(("secret").Sha256()) },
                          AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
-                         RequireClientSecret = false,
                          AllowedScopes = { "User" },
+                         AllowAccessTokensViaBrowser = true,
                     },
                     new Client
                     {
