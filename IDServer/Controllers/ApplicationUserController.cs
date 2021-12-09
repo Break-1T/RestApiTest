@@ -19,7 +19,6 @@ namespace IDServer.Controllers
     [Route("[controller]")]
     public class ApplicationUserController : ControllerBase
     {
-
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IMapper _mapper;
 
@@ -57,6 +56,7 @@ namespace IDServer.Controllers
         [Route("create")]
         public async Task<IActionResult> CreateUser([FromBody] AuthenticateRequest user, CancellationToken cancellationToken=default)
         {
+
             try
             {
                 var random = new Random().Next(0, 99999);

@@ -1,0 +1,57 @@
+version: '3.4'
+
+networks:
+  guestbook-network:
+    name: guestbook-network
+    driver: bridge
+
+services:
+  restapi-core-api:
+   container_name: restapi-core-api
+   build: .
+   image: taraskrupko/restapi-core-api-mydockerfile:1.1
+   restart: always
+   networks: 
+     - guestbook-network
+   ports:
+     - 6002:8081
+   depends_on:
+     - restapi-db
+     - restapi-core-identity-server
+   environment:
+     - IdentityServer__Url=http://restapi-core-identity-server:8080
+     - ConnectionStrings__DatabaseConnection=Host=restapi-db;Port=5432;Database=testdb;Username=postgres;Password=postgres
+  #  environment:
+  #      ConnectionStrings__DatabaseConnection: "Host=restapi-db;Port=5432;Database=testdb;Username=postgres;Password=postgres"
+  #      IdentityServer__Url: "https://restapi-core-identity-server"
+    
+  restapi-core-identity-server:
+    container_name: restapi-core-identity-server
+    build: .
+    image: taraskrupko/restapi-core-identity-server-mydockerfile:1.3
+    restart: always
+    networks: 
+      - guestbook-network
+    ports:
+      - 6001:8080
+    depends_on:
+      - restapi-db
+    environment:
+      ConnectionStrings__DatabaseConnection: "Host=restapi-db;Port=5432;Database=testdb;Username=postgres;Password=postgres"
+      ConnectionStrings__IDENTITY_ISSUER: "http://restapi-core-identity-server:6001"
+  restapi-db:
+    container_name: restapi-db
+    image: postgres:latest
+    networks: 
+      - guestbook-network
+    ports:
+      - 6543:5432
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - guestbook-postgres-data:/var/lib/postgres
+
+volumes:
+  guestbook-postgres-data:

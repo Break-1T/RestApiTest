@@ -11,22 +11,14 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
-using Api.Infrastructure.Profiles;
-using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Context;
 using Context.Infrastructure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
-using Microsoft.Extensions.Options;
-using Swashbuckle.AspNetCore.SwaggerGen;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
-using IdentityServer4;
-using IdentityServer4.Models;
 
 namespace Api
 {
@@ -78,14 +70,16 @@ namespace Api
             services.AddAuthentication("Bearer")
            .AddJwtBearer("Bearer", options =>
            {
-               options.Authority = "https://localhost:44336";
-
+               Console.WriteLine(Configuration.GetSection("IdentityServer:Url").Value);
+               options.Authority = Configuration.GetSection("IdentityServer:Url").Value;
+               options.RequireHttpsMetadata = false;
+               options.IncludeErrorDetails = true;
                options.TokenValidationParameters = new TokenValidationParameters
                {
-                   ValidateAudience = false
+                   ValidateAudience = false,
                };
 
-           });
+           });          
            //.AddOpenIdConnect("oidc", options =>
            //{
            //    options.SignInScheme = "Cookies";
@@ -143,11 +137,10 @@ namespace Api
             {
                 app.UseExceptionHandler("/home/error");
             }
-            app.UseHttpsRedirection();
 
             //The authentication middleware should be added before the MVC in the pipeline.
             app.UseAuthentication();
-
+            app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
 
