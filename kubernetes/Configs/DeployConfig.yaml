@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rest-api-test-deploy-config
+data:
+  ConnectionStrings__DatabaseConnection: "Host=localhost;Port=5432;Database=testdb;Username=postgres;Password=postgres"
+  IDENTITY__ISSUER: "http://localhost:8080"
+  IdentityServer__Url: "http://localhost:8080"

@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: restapitest-deployment-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: restapitest-deployment
+  ports:
+  - port: 8081
+    name: http-api
+    targetPort: api-port
+  - port: 8080
+    name: http-identity
+    targetPort: idserver-port
+  - port: 6543
+    name: http-db
+    targetPort: db-port
