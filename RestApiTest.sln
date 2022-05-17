@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31727.386
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32319.34
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Context", "Contex\Context.csproj", "{D31096CB-49EE-471F-ABDA-77F05F67091F}"
 EndProject
@@ -14,8 +14,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RestApi.Integration.Tests", "RestApi.Integretion.Tests\RestApi.Integration.Tests.csproj", "{5704C3A7-8EC5-4B16-988D-F3AC446BDB13}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IDServer", "IDServer\IDServer.csproj", "{267836CB-BE87-437D-BBC9-96B16AA198D0}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmptyProject", "EmptyProject\EmptyProject.csproj", "{2A6C6D4C-198E-407F-948E-F67DA464C6B0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,10 +45,6 @@ Global
 		{267836CB-BE87-437D-BBC9-96B16AA198D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{267836CB-BE87-437D-BBC9-96B16AA198D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{267836CB-BE87-437D-BBC9-96B16AA198D0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2A6C6D4C-198E-407F-948E-F67DA464C6B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2A6C6D4C-198E-407F-948E-F67DA464C6B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2A6C6D4C-198E-407F-948E-F67DA464C6B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2A6C6D4C-198E-407F-948E-F67DA464C6B0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

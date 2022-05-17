@@ -3,15 +3,17 @@ using System;
 using Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Migrations.Migrations
 {
     [DbContext(typeof(RestApiContext))]
-    partial class ApplicationContexModelSnapshot : ModelSnapshot
+    [Migration("20220127121947_TimesPan")]
+    partial class TimesPan
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -105,7 +107,7 @@ namespace Migrations.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@MASTER.COM",
                             NormalizedUserName = "ADMIN@MASTER.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAECMlnmaK/B1tB6AG3r2ZX80re3J1J8lEHMyurD4oapDMqJ/PloVh4C6RGETwhrIHDg==",
+                            PasswordHash = "AQAAAAEAACcQAAAAECcmRWUVVXjvAc3c/wXEINknZstQREewkxe4lDE8/seSl3XM8tB+ymo2cfIrHUOJOQ==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "v3261te0-g279-8c3q-b8ii-ss9s44m894v207",
                             TwoFactorEnabled = false,
@@ -139,16 +141,10 @@ namespace Migrations.Migrations
 
             modelBuilder.Entity("Context.Models.Temp", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
                     b.Property<TimeSpan>("Time")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("interval")
                         .HasDefaultValue(new TimeSpan(0, 0, 0, 0, 0));
-
-                    b.HasKey("Id");
 
                     b.ToTable("Temp");
                 });

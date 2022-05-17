@@ -14,6 +14,8 @@ namespace Context
         public virtual DbSet<Operation> Operations { get; set; }
         public virtual DbSet<ApplicationUser> ApplicationUsers { get; set; }
 
+        public virtual DbSet<Temp> Temps { get; set; }
+
         public RestApiContext(DbContextOptions<RestApiContext> options):base(options){ }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -53,6 +55,13 @@ namespace Context
                 entry.Property(prop => prop.Login);
                 entry.Property(prop => prop.Password);
 
+            });
+
+            modelBuilder.Entity<Temp>(entity =>
+            {
+                entity.ToTable("Temp");
+                entity.HasKey(x => x.Id);
+                entity.Property(x => x.Time).HasDefaultValue(new TimeSpan(0, 0, 0, 0, 0));
             });
 
             InitDefaultData.Init(modelBuilder);

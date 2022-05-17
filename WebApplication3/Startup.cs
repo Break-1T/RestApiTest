@@ -56,9 +56,8 @@ namespace Api
             });
 
             services.AddAutoMapper(typeof(Startup));
-
+            services.AddHttpClient();
             services.AddTransient<IUserService, UserService>();
-
             services.AddEntityFrameworkNpgsql()
                 .AddDbContext<RestApiContext>(optionsBuilder =>
                     optionsBuilder.UseNpgsql(Configuration.GetConnectionString("DatabaseConnection"),

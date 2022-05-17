@@ -12,6 +12,11 @@ using DbUser = Context.Models.User;
 using System.Reflection;
 using Microsoft.AspNetCore.Authorization;
 using Context.Models;
+using System.Configuration;
+using Microsoft.Extensions.Configuration;
+using System.Net.Http;
+using System;
+using System.Text.Json;
 
 namespace Api.api.v1.Controllers
 {
@@ -20,19 +25,25 @@ namespace Api.api.v1.Controllers
     public class UserController : ControllerBase
     {
         //public UserController() { }
-        public UserController(ILogger<UserController> logger, IUserService service,IMapper mapper)
+        public UserController(ILogger<UserController> logger, IUserService service,IMapper mapper, IConfiguration configuration, IHttpClientFactory httpClient)
         {
             this._logger = logger;
             this._service = service;
             this.token = new CancellationToken();
             this._mapper = mapper;
+            this._configuration = configuration;
+            this._httpClient = httpClient.CreateClient();
         }
+
+        private const string ApiRoute = "connect/token";
 
         private readonly ILogger<UserController> _logger;
         private readonly IUserService _service;
         private readonly CancellationToken token;
         private readonly IMapper _mapper;
-        
+        private readonly IConfiguration _configuration;
+        private readonly HttpClient _httpClient;
+
         [Authorize]
         [HttpDelete("delete/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(bool))]
@@ -67,15 +78,35 @@ namespace Api.api.v1.Controllers
             return this.CreatedAtAction("CreateUser", new { id = userResponse.Id }, userResponse);
         }
 
-        //[HttpPost("authenticate")]
-        //public IActionResult Authenticate(ApplicationUser model)
-        //{
-        //    var response = _userService.Authenticate(model);
+        [HttpPost("authenticate")]
+        public async Task<IActionResult> Authenticate([FromQuery]LoginRequest model)
+        {
+            var requestMessage = new HttpRequestMessage
+            {
+                Method = HttpMethod.Post,
+                Content = new FormUrlEncodedContent(
+                    new Dictionary<string, string>
+                    {
+                        { "client_id", "MyClient" },
+                        { "client_secret", "secret" },
+                        { "grant_type", "password" },
+                        { "scope", "User" },
+                        { "username", model.Username },
+                        { "password", model.Password },
+                    }),
+                RequestUri = new Uri(new Uri(this._configuration.GetSection("IdentityServer:Url").Value), ApiRoute),
+            };
 
-        //    if (response == null)
-        //        return BadRequest(new { message = "Username or password is incorrect" });
+            var result = await this._httpClient.SendAsync(requestMessage);
+            var type = new
+            {
+                access_token = "",
+                expires_in = 0,
+                token_type = "",
+                scope = "",
+            };
 
-        //    return Ok(response);
-        //}
+            return this.Ok(JsonSerializer.Deserialize(await result.Content?.ReadAsStringAsync(), type.GetType()));
+        }
     }
 }

@@ -12,6 +12,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using IDServer.Models;
+using Context;
 
 namespace IDServer.Controllers
 {
@@ -21,6 +22,7 @@ namespace IDServer.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IMapper _mapper;
+        private readonly RestApiContext _dbContext;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ApplicationUserController"/> class.
@@ -41,10 +43,11 @@ namespace IDServer.Controllers
         /// or
         /// tokenService
         /// </exception>
-        public ApplicationUserController(UserManager<ApplicationUser> userManager, IMapper mapper)
+        public ApplicationUserController(UserManager<ApplicationUser> userManager, IMapper mapper, RestApiContext dbContext)
         {
             this._userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
             this._mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            this._dbContext = dbContext;
         }
         /// <summary>
         /// Creates the user.
@@ -81,6 +84,15 @@ namespace IDServer.Controllers
             {
                 return this.BadRequest(ex);
             }
+        }
+
+        [HttpPost]
+        [Route("temp")]
+        public async Task<IActionResult> AddTemp()
+        {
+            this._dbContext.Temps.Add(new Temp());
+            await this._dbContext.SaveChangesAsync();
+            return this.Ok();
         }
     }
 }
